@@ -43,7 +43,7 @@ const LEARNING = (() => {
     { title:'Comer un plátano', steps:[['🍌','Tomar el plátano'],['🤲','Pelar el plátano'],['😋','Comer el plátano']], short:[['🤲','Pelar el plátano'],['😋','Comer el plátano']] },
     { title:'Salir a jugar', steps:[['👟','Ponerse los zapatos'],['🚪','Salir de casa'],['⚽','Jugar con la pelota']], short:[['👟','Ponerse los zapatos'],['⚽','Jugar con la pelota']] }
   ];
-  const levels={1:{name:'Primeros pasos',choices:2,pieces:4},2:{name:'Explorar',choices:4,pieces:6},3:{name:'Un nuevo reto',choices:4,pieces:12}};
+  const levels={1:{name:'Primeros pasos',choices:2,pieces:4},2:{name:'Explorar',choices:4,pieces:6},3:{name:'Un nuevo reto',choices:4,pieces:12},4:{name:'Conecto mis ideas',choices:4,pieces:16}};
   const sentenceRows=[
     [1,'El perro duerme','🐕 🛏️'],[1,'La niña salta','👧 ⬆️'],[1,'El gato come','🐈 🍽️'],[1,'El bebé ríe','👶 😊'],
     [1,'La vaca camina','🐄 👣'],[1,'El pájaro vuela','🐦 ☁️'],[1,'El niño bebe agua','🧒 🥤 💧'],[1,'La niña come pan','👧 🍽️ 🍞'],
@@ -122,9 +122,150 @@ const LEARNING = (() => {
     {title:'Preparar y comer un plátano',steps:[['🚰','Lavarse las manos'],['🍌','Tomar el plátano'],['🤲','Pelar el plátano'],['😋','Comer el plátano'],['🗑️','Botar la cáscara']]},
     {title:'Una tarde de juego',steps:[['👟','Ponerse los zapatos'],['🚪','Salir de casa'],['🌳','Llegar al parque'],['⚽','Jugar con la pelota'],['🏠','Volver a casa'],['🚰','Lavarse las manos']]}
   ];
-  function questionBank(level){return level===3?[...challengeQuestions,...moreQuestions]:level===2?[...questions,...moreQuestions]:questions;}
-  function intruderBank(level){return level===3?trickyIntruders:intruders;}
-  function puzzleGrid(pieces){return {cols:pieces===4?2:pieces===6||pieces===9?3:4,rows:pieces===9||pieces===12?3:2};}
+  sentenceRows.push(
+    [4,'Aunque está lloviendo podemos jugar dentro de la casa','🌧️ 🏠 🧩'],
+    [4,'Si no encuentro mi cuaderno puedo pedir ayuda para buscarlo','📓 🔎 🤝'],
+    [4,'La niña que lleva una mochila azul espera el bus','👧 🎒 🔵 🚌'],
+    [4,'Mientras mamá prepara la comida yo pongo los platos','👩 🍲 🙋 🍽️'],
+    [4,'No llevo la pelota porque hoy prefiero leer un cuento','✋ ⚽ 📖'],
+    [4,'Después de regar la planta guardo la regadera en el patio','💧 🪴 🏡'],
+    [4,'Antes de salir al parque reviso si tengo mi botella','🌳 🔎 💧'],
+    [4,'El perro busca la pelota que quedó debajo de la silla','🐕 🔎 ⚽ 🪑'],
+    [4,'Como hace frío me pongo la chaqueta antes de salir','❄️ 🧥 🚪'],
+    [4,'Quiero terminar este dibujo y después jugar con mi hermano','🖍️ 🖼️ 🤝 ⚽'],
+    [4,'Si el vaso está vacío necesito llenarlo para beber agua','🥛 💧'],
+    [4,'Prefiero la manzana verde pero hoy solo hay manzanas rojas','🍏 🍎']
+  );
+  completions.push(
+    [4,'Dos acciones ocurren al mismo tiempo.','Yo dibujo ___ mi hermana lee.','mientras',['después','debajo','para'],'🖍️ 📖'],
+    [4,'La lluvia no impide jugar dentro de casa.','___ llueve, jugamos en casa.','Aunque',['Debajo','Encima','Después'],'🌧️ 🏠 🧩'],
+    [4,'Es una condición: primero tiene que llover.','___ llueve, usaré paraguas.','Si',['Pero','Para','Dentro'],'🌧️ ☂️'],
+    [4,'El libro pertenece a Ana. Hablamos de ella.','Ana guarda ___ libro.','su',['sus','nuestros','mis'],'👧 📖'],
+    [4,'Ayer ocurrió la visita. Ya terminó.','Ayer nosotros ___ al parque.','fuimos',['iremos','ir','voy'],'🗓️ 🌳'],
+    [4,'Mañana todavía no llega.','Mañana yo ___ un cuento.','leeré',['leí','leyeron','leyendo'],'🗓️ 📖'],
+    [4,'Identificamos a la niña que tiene la mochila.','La niña ___ tiene mochila espera el bus.','que',['pero','para','aunque'],'👧 🎒 🚌'],
+    [4,'El vaso está vacío. Por esa razón lo lleno.','El vaso está vacío; ___ lo lleno.','por eso',['sin embargo','antes','debajo'],'🥛 💧']
+  );
+  stories.push(
+    {level:4,title:'El libro que cambió de lugar',scene:'👧 📖 🪑 🗄️',lines:['Luna dejó su libro sobre una silla.','Mientras Luna estaba en el patio, papá puso el libro en un estante.','Cuando volvió, Luna buscó primero en la silla, pero no lo encontró.','Le preguntó a papá y él le mostró el estante.'],questions:[['¿Dónde está el libro al final?','En el estante','En la silla','En el patio'],['¿Por qué Luna busca primero en la silla?','Porque allí lo había dejado','Porque papá se lo dijo','Porque lo vio en el estante'],['¿Qué le permite encontrar el libro?','Preguntarle a papá','Salir al patio','Mirar por la ventana']]},
+    {level:4,title:'Dos planes para la tarde',scene:'🧒 🧩 🌳 🌧️',lines:['Max quiere ir al parque después de terminar su puzle.','Acuerda con su papá: si llueve, jugarán con bloques en casa.','Max termina el puzle y mira por la ventana. Está lloviendo.','Saca los bloques y construye una torre con su papá.'],questions:[['¿Qué condición cambia el plan?','Que llueva','Que haya bloques','Que el puzle tenga piezas'],['¿Qué termina antes de jugar con bloques?','El puzle','Una torre','Un dibujo'],['Si no hubiera llovido, ¿cuál era el plan?','Ir al parque','Lavar los bloques','Buscar un libro']]},
+    {level:4,title:'Las botellas del paseo',scene:'👧 🧒 💧 🎒',lines:['Eva y Nico preparan un paseo. Cada uno necesita una botella con agua.','Eva tiene su botella llena, pero la de Nico está vacía.','Nico llena su botella y la cierra antes de ponerla en la mochila.','Ahora los dos tienen agua para el camino.'],questions:[['¿De quién era la botella vacía?','De Nico','De Eva','De ambos'],['¿Para qué la cierra antes de guardarla?','Para que no se salga el agua','Para que pese menos','Para vaciarla'],['¿Qué tienen en común al final?','Ambos llevan agua','Ambos tienen botellas vacías','Ambos dejaron las mochilas']]}
+  );
+  const advancedSequences=[
+    {title:'Del dibujo a la carpeta',steps:[['📄','Tomar una hoja'],['✏️','Dibujar un círculo en la hoja'],['🖍️','Colorear el círculo dibujado'],['📝','Escribir el nombre en el dibujo coloreado'],['📂','Abrir la carpeta'],['🖼️','Poner el dibujo en la carpeta abierta'],['✅','Cerrar la carpeta con el dibujo dentro']]},
+    {title:'Preparar una maceta',steps:[['🪴','Tomar una maceta vacía'],['🟤','Poner tierra en la maceta'],['☝️','Hacer un hoyito en la tierra'],['🌱','Colocar una semilla en el hoyito'],['🟤','Cubrir la semilla con tierra'],['💧','Regar la tierra que cubre la semilla'],['☀️','Llevar la maceta regada a la luz']]},
+    {title:'Una carta para la abuela',steps:[['📄','Elegir una hoja para la carta'],['✏️','Escribir la carta en la hoja'],['📃','Doblar la carta escrita'],['✉️','Poner la carta doblada en el sobre'],['✅','Cerrar el sobre con la carta dentro'],['📝','Escribir la dirección en el sobre cerrado'],['📮','Llevar el sobre con dirección al correo']]}
+  ];
+  const advancedIntruders=[
+    {ids:['manzana','pan','zanahoria','leche'],answer:'leche',rule:'Buscamos alimentos sólidos: ¿cuál queda fuera porque es líquido?',why:'La leche es líquida; manzana, pan y zanahoria son alimentos sólidos.'},
+    {ids:['auto','bus','camion','bicicleta'],answer:'bicicleta',rule:'Tres de estos transportes suelen usar motor. ¿Cuál se mueve al pedalear?',why:'La bicicleta se mueve al pedalear. Auto, bus y camión suelen usar motor.'},
+    {ids:['gorro','polera','pantalon','zapatos'],answer:'gorro',rule:'Tres prendas se usan por debajo del cuello. ¿Cuál se usa en la cabeza?',why:'El gorro se usa en la cabeza. Polera, pantalón y zapatos se usan por debajo del cuello.'},
+    {ids:['comer','dormir','jugar','cuchara'],answer:'cuchara',rule:'Tres palabras nombran acciones. ¿Cuál nombra un objeto?',why:'Cuchara nombra un objeto. Comer, dormir y jugar nombran acciones.'}
+  ];
+  const advancedQuestions=[
+    ['Sigue lloviendo cuando termina de guardar.','Ana irá al patio si deja de llover. Mientras llueve, guarda los juguetes.','¿Puede ir al patio según el acuerdo?','Todavía no, porque llueve','Sí, porque guardó','Sí, porque hay juguetes','No, porque es de noche'],
+    ['El pronombre «él» se refiere a Mateo.','Mateo tiene un perro. Él prepara agua para su perro.','¿Quién prepara el agua?','Mateo','El perro','Una niña','La abuela'],
+    ['Busca la información que falta.','El cuento dice: «Sofía llevó una fruta a la escuela». No dice cuál.','¿Podemos saber qué fruta llevó?','No, falta esa información','Sí, una manzana','Sí, un plátano','Sí, una pera'],
+    ['La primera acción ocurrió ayer.','Ayer Leo hizo un dibujo. Hoy se lo muestra a su hermana.','¿Qué hizo antes?','Hizo el dibujo','Mostró el dibujo','Salió al parque','Leyó un libro'],
+    ['La descripción tiene tres pistas.','Es un alimento, se bebe y es blanco.','¿De qué hablamos?','Leche','Pan','Agua','Manzana'],
+    ['La causa es que el recipiente está vacío.','Max quiere regar la planta. Inclina la regadera, pero no sale agua: está vacía.','¿Qué necesita hacer antes de regar?','Llenar la regadera','Guardar la regadera','Cambiar la planta','Cerrar la ventana'],
+    ['«Los dos» significa Eva y su abuelo.','Eva y su abuelo leen un cuento. Los dos se sientan en el sofá.','¿Quiénes se sientan?','Eva y su abuelo','Solo Eva','Solo su abuelo','Eva y su perro'],
+    ['Elige la frase que coincide con los dos datos.','La mochila de Tomás es azul. La de Sara es roja.','¿Cuál es la descripción correcta?','Tomás tiene la azul y Sara la roja','Los dos tienen mochila azul','Tomás tiene la roja','Sara tiene la azul']
+  ].map(([model,context,text,answer,...wrong])=>({kind:'CONECTAR IDEAS',context,text,answer,model,options:[answer,...wrong].map(label=>['💡',label])}));
+  // Each reasoning row is [level, visible clue, question, correct answer, three alternatives, explanation].
+  const reasoningRows={
+    patrones:[
+      [1,'🔴 🔵 🔴 🔵 🔴 …','Rojo y azul se turnan. ¿Qué sigue?','🔵 Azul',['🔴 Rojo','🟡 Amarillo','🟢 Verde'],'Después de rojo va azul.'],
+      [1,'🐕 🐈 🐕 🐈 🐕 …','Perro y gato se turnan. ¿Qué sigue?','🐈 Gato',['🐕 Perro','🐄 Vaca','🐦 Pájaro'],'Después del perro va el gato.'],
+      [1,'👏 👣 👏 👣 👏 …','Palmas y pasos se turnan. ¿Qué sigue?','👣 Pasos',['👏 Palmas','🛏️ Dormir','📖 Leer'],'Repetimos palmas, pasos. Ahora van pasos.'],
+      [1,'🍎 🍌 🍎 🍌 🍎 …','Manzana y plátano se turnan. ¿Qué sigue?','🍌 Plátano',['🍎 Manzana','🍐 Pera','🍞 Pan'],'Repetimos manzana, plátano. Ahora va plátano.'],
+      [1,'☀️ 🌙 ☀️ 🌙 ☀️ …','Sol y luna se turnan. ¿Qué sigue?','🌙 Luna',['☀️ Sol','⭐ Estrella','☁️ Nube'],'Después del sol va la luna.'],
+      [1,'▲ ● ▲ ● ▲ …','Triángulo y círculo se turnan. ¿Qué sigue?','● Círculo',['▲ Triángulo','■ Cuadrado','★ Estrella'],'Repetimos triángulo, círculo. Ahora va círculo.'],
+      [2,'🔴 🔴 🔵 · 🔴 🔴 🔵 · 🔴 🔴 …','Se repite rojo, rojo, azul. ¿Qué sigue?','🔵 Azul',['🔴 Rojo','🟢 Verde','🟡 Amarillo'],'Tras dos rojos viene un azul.'],
+      [2,'🍎 🍌 🍐 · 🍎 🍌 …','Se repiten tres frutas en ese orden. ¿Qué sigue?','🍐 Pera',['🍎 Manzana','🍌 Plátano','🍇 Uvas'],'La unidad es manzana, plátano, pera.'],
+      [2,'👏 👣 👣 · 👏 👣 …','Se repiten palmas, paso, paso. ¿Qué sigue?','👣 Paso',['👏 Palmas','🖐️ Saludo','🛏️ Dormir'],'Falta el segundo paso antes de volver a las palmas.'],
+      [2,'1 · 2 · 3 · 4 · …','Contamos de uno en uno. ¿Qué sigue?','5',['6','3','8'],'Después de cuatro viene cinco.'],
+      [2,'■ ● ▲ · ■ …','Se repite cuadrado, círculo, triángulo. ¿Qué sigue?','● Círculo',['▲ Triángulo','■ Cuadrado','★ Estrella'],'Después del cuadrado va el círculo.'],
+      [2,'🐕 🐕 🐈 🐈 · 🐕 🐕 🐈 …','Van dos perros y dos gatos. ¿Qué falta?','🐈 Gato',['🐕 Perro','🐄 Vaca','🐦 Pájaro'],'Falta el segundo gato de la pareja.'],
+      [3,'2 · 4 · 6 · 8 · …','Sumamos dos cada vez. ¿Qué sigue?','10',['9','11','12'],'Ocho más dos son diez.'],
+      [3,'10 · 9 · 8 · 7 · …','Quitamos uno cada vez. ¿Qué sigue?','6',['5','8','4'],'Siete menos uno son seis.'],
+      [3,'🔴 🔵 🔵 · 🔴 🔵 🔵 · 🔴 …','Se repite rojo, azul, azul. ¿Qué sigue?','🔵 Azul',['🔴 Rojo','🟢 Verde','🟡 Amarillo'],'Después de rojo comienzan los dos azules.'],
+      [3,'▲ ● ■ · ▲ … ■','Se repite triángulo, círculo, cuadrado. ¿Qué falta en medio?','● Círculo',['▲ Triángulo','■ Cuadrado','★ Estrella'],'Entre triángulo y cuadrado va círculo.'],
+      [3,'5 · 10 · 15 · …','Sumamos cinco cada vez. ¿Qué sigue?','20',['16','25','30'],'Quince más cinco son veinte.'],
+      [3,'🍎 🍌 🍐 · 🍎 🍌 🍐 · …','La unidad de tres frutas se repite. ¿Cómo empieza otra vez?','🍎 Manzana',['🍌 Plátano','🍐 Pera','🍇 Uvas'],'Después de la pera vuelve la manzana.'],
+      [4,'3 · 6 · 9 · 12 · …','Sumamos tres cada vez. ¿Qué sigue?','15',['14','16','18'],'Doce más tres son quince.'],
+      [4,'2 · 4 · 8 · 16 · …','Cada número es el doble del anterior. ¿Qué sigue?','32',['18','24','30'],'El doble de dieciséis es treinta y dos.'],
+      [4,'1 · 2 · 4 · 5 · 7 · …','Alternamos sumar uno y sumar dos. ¿Qué sigue?','8',['9','10','6'],'Después de sumar dos toca sumar uno: siete más uno.'],
+      [4,'20 · 18 · 16 · … · 12','Restamos dos en cada paso. ¿Qué número falta?','14',['15','13','10'],'Dieciséis menos dos son catorce, y luego viene doce.'],
+      [4,'▲ ● ● ■ · ▲ ● ● ■ · ▲ ● …','Se repiten triángulo, dos círculos y cuadrado. ¿Qué sigue?','● Círculo',['■ Cuadrado','▲ Triángulo','★ Estrella'],'Falta el segundo círculo antes del cuadrado.'],
+      [4,'1 · 3 · 6 · 10 · …','Sumamos dos, luego tres, luego cuatro. Ahora sumamos cinco.','15',['12','14','20'],'Diez más cinco son quince.']
+    ],
+    pistas:[
+      [1,'🐾 Hace «guau».','¿Qué animal es?','Perro',['Gato','Vaca','Pájaro'],'El perro hace guau.'],
+      [1,'🍽️ Sirve para tomar sopa.','¿Qué objeto es?','Cuchara',['Zapato','Pelota','Gorro'],'La cuchara sirve para tomar sopa.'],
+      [1,'🛏️ Me acuesto aquí para dormir.','¿Qué es?','Cama',['Mesa','Bicicleta','Vaso'],'Puedo acostarme en la cama para dormir.'],
+      [1,'👟 Me los pongo en los pies.','¿Qué son?','Zapatos',['Guantes','Gorros','Poleras'],'Los zapatos se usan en los pies.'],
+      [1,'📖 Tiene páginas que puedo leer.','¿Qué es?','Libro',['Plato','Auto','Silla'],'Un libro tiene páginas que puedo leer.'],
+      [1,'💧 La bebo cuando tengo sed.','¿Qué es?','Agua',['Arena','Papel','Ropa'],'Puedo beber agua cuando tengo sed.'],
+      [2,'Es una fruta, es amarilla y se pela.','¿Cuál coincide con las pistas?','Plátano',['Manzana roja','Pan','Leche'],'El plátano es una fruta amarilla que se pela.'],
+      [2,'Tiene dos ruedas y pedales.','¿Qué transporte es?','Bicicleta',['Auto','Avión','Bus'],'La bicicleta tiene dos ruedas y pedales.'],
+      [2,'Tiene hojas, pero no es una planta. Se puede leer.','¿Qué es?','Libro',['Árbol','Flor','Maceta'],'Las hojas de un libro se pueden leer.'],
+      [2,'Es ropa y se usa en la cabeza.','¿Cuál coincide?','Gorro',['Pantalón','Zapatos','Polera'],'El gorro es una prenda para la cabeza.'],
+      [2,'Tiene alas y plumas.','¿Cuál coincide con ambas pistas?','Pájaro',['Avión','Perro','Pez'],'El pájaro tiene alas y plumas.'],
+      [2,'Es un recipiente; le pongo agua para beber.','¿Qué objeto es?','Vaso',['Zapato','Cuaderno','Pelota'],'Pongo agua en un vaso para beber.'],
+      [3,'Puede volar, lleva pasajeros y no es un animal.','¿Qué es?','Avión',['Pájaro','Mariposa','Bus'],'El avión vuela, transporta pasajeros y no es un animal.'],
+      [3,'Hay una caja roja con ropa, una azul con libros y una verde con juguetes.','¿Cuál contiene algo para leer?','La azul',['La roja','La verde','Ninguna'],'La caja azul contiene libros para leer.'],
+      [3,'Ana está delante de Leo. Leo está delante de Eva.','¿Quién está en medio?','Leo',['Ana','Eva','Nadie'],'Leo queda después de Ana y antes de Eva.'],
+      [3,'Busco algo para comer. No quiero fruta ni bebida. Hay pan, pera, agua y leche.','¿Qué cumple todas las pistas?','Pan',['Pera','Agua','Leche'],'El pan se come y no es fruta ni bebida.'],
+      [3,'La pelota no está en la caja ni bajo la cama. Solo puede estar en esos lugares o en la bolsa.','¿Dónde está?','En la bolsa',['En la caja','Bajo la cama','En el patio'],'Al descartar caja y cama, queda la bolsa.'],
+      [3,'La torre roja es más alta que la azul. La azul es más alta que la verde.','¿Cuál es la más alta?','La roja',['La azul','La verde','Todas iguales'],'La roja es más alta que las otras dos.'],
+      [4,'Solo hay tres llaves: roja, azul y verde. La que abre no es roja. La verde está rota y no abre.','¿Qué llave abre?','La azul',['La roja','La verde','Las tres'],'Al descartar roja y verde, queda la azul.'],
+      [4,'Eva llegó antes que Leo. Max llegó después de Leo.','¿Quién llegó al final?','Max',['Eva','Leo','No se puede saber'],'El orden es Eva, Leo y Max.'],
+      [4,'Ana tiene más lápices que Luis. Luis tiene más que Eva.','¿Quién tiene menos lápices?','Eva',['Ana','Luis','Todos igual'],'Eva tiene menos que Luis, y Luis menos que Ana.'],
+      [4,'Cada caja tiene un objeto distinto: libro, pelota o gorro. La roja tiene el libro. La azul no tiene el gorro.','¿Qué hay en la verde?','El gorro',['El libro','La pelota','Los tres objetos'],'La azul tiene la pelota; el gorro queda en la verde.'],
+      [4,'Para entrar se necesitan dos cosas: entrada y gorro. Ana tiene ambas. Leo solo tiene gorro. Eva solo tiene entrada.','¿Quién cumple las dos condiciones?','Ana',['Leo','Eva','Los tres'],'Ana es la única que tiene entrada y gorro.'],
+      [4,'La bolsa grande pesa menos que la pequeña. La mediana pesa más que la pequeña.','¿Cuál pesa más?','La mediana',['La grande','La pequeña','No se puede saber'],'La mediana pesa más que la pequeña, que pesa más que la grande.']
+    ],
+    soluciones:[
+      [1,'Tengo sed. Hay agua disponible.','¿Qué me ayuda a calmar la sed?','Beber agua',['Ponerme zapatos','Leer','Guardar lápices'],'Beber agua ayuda a calmar la sed.'],
+      [1,'Mis manos están mojadas. Quiero secarlas.','¿Qué necesito?','Una toalla',['Una pelota','Un libro','Un gorro'],'Puedo secar mis manos con una toalla.'],
+      [1,'El lápiz está dentro de una caja cerrada.','¿Qué hago para sacarlo?','Abrir la caja',['Cerrar la caja','Guardar la caja','Pintar la caja'],'Primero abro la caja para sacar el lápiz.'],
+      [1,'Quiero dibujar sobre una hoja.','¿Qué objeto me sirve?','Un lápiz',['Un zapato','Una cuchara','Un vaso'],'Puedo dibujar con un lápiz.'],
+      [1,'Necesito ayuda para abrir una tapa.','¿Qué mensaje sirve?','Ayúdame a abrir',['Tengo sed','Hasta mañana','Quiero un cuento'],'Puedo decir o señalar: ayúdame a abrir.'],
+      [1,'Quiero llevar varios libros juntos.','¿Qué me sirve para guardarlos y llevarlos?','Una mochila',['Una cuchara','Un plato','Un lápiz'],'Puedo llevar los libros en una mochila.'],
+      [2,'Está lloviendo. Quiero salir sin mojarme la cabeza.','¿Qué objeto me ayuda?','Un paraguas',['Una pelota','Un vaso','Un cuaderno'],'El paraguas me protege de la lluvia.'],
+      [2,'Se derramó agua sobre la mesa. Quiero dejarla seca.','¿Qué puedo hacer?','Secarla con un paño',['Agregar agua','Poner un libro encima','Soplar una vez'],'Un paño absorbe el agua y ayuda a secar la mesa.'],
+      [2,'Quiero armar el puzle, pero la mesa está llena de juguetes.','¿Qué puedo hacer para tener espacio?','Guardar los juguetes',['Traer más juguetes','Poner un vaso','Cerrar los ojos'],'Guardar los juguetes deja espacio para el puzle.'],
+      [2,'Mi lápiz no tiene punta. Quiero seguir dibujando.','¿Qué herramienta necesito?','Un sacapuntas',['Una regla','Un vaso','Una pelota'],'Con el sacapuntas puedo hacer una nueva punta.'],
+      [2,'El libro está en un estante que no alcanzo.','¿Qué mensaje resuelve el problema?','¿Me pasas el libro?',['Quiero agua','Tengo sueño','¿Qué hora es?'],'Puedo pedir que me pasen el libro.'],
+      [2,'No escuché una instrucción y quiero entenderla.','¿Qué puedo pedir?','¿Puedes repetir?',['¿Dónde está el perro?','Quiero pan','Hasta mañana'],'Puedo pedir que repitan la instrucción.'],
+      [3,'Quiero hacer una torre azul. La caja está cerrada y los bloques azules están dentro.','¿Qué necesito hacer primero?','Abrir la caja',['Apilar los bloques','Cerrar la caja','Guardar la torre'],'Para sacar los bloques primero necesito abrir la caja.'],
+      [3,'La planta necesita agua y la regadera está vacía.','¿Qué secuencia resuelve el problema?','Llenar y después regar',['Regar y después llenar','Guardar y después cerrar','Vaciar y después guardar'],'Primero lleno la regadera; después puedo regar.'],
+      [3,'Quiero llevar agua en mi mochila sin que se derrame. La botella está llena y abierta.','¿Qué debo hacer antes de guardarla?','Cerrar bien la botella',['Abrirla más','Inclinarla','Quitarle la tapa'],'Cerrar la botella ayuda a que el agua no se derrame.'],
+      [3,'Busco un juguete. Lo usé en el patio y luego lo guardé en la caja.','¿Dónde conviene buscar primero?','En la caja',['En el patio','En el vaso','En el baño'],'El último lugar mencionado es la caja.'],
+      [3,'Quiero hacer un dibujo verde, pero mi lápiz verde se terminó. Hay otro en el cajón.','¿Qué opción permite seguir en verde?','Buscar el otro lápiz',['Usar el rojo','Guardar la hoja','Borrar todo'],'Puedo buscar el otro lápiz verde en el cajón.'],
+      [3,'Alguien pregunta qué necesito. La tapa no abre y quiero sacar mi juguete.','¿Qué mensaje da más información?','Necesito ayuda para abrir la caja',['Necesito algo','Mira eso','Allí'],'El mensaje explica qué ayuda necesito y para qué.'],
+      [4,'Para pintar necesito papel y pincel. Tengo pincel. El papel está en una caja vacía de juguetes junto a la mesa.','¿Qué me falta preparar?','Sacar el papel de la caja',['Buscar otro pincel','Guardar el pincel','Buscar juguetes'],'Ya tengo pincel; falta sacar el papel.'],
+      [4,'Si el patio está mojado, jugamos dentro. Está mojado y además hace sol.','¿Dónde jugamos según la regla?','Dentro',['En el patio','En ambos lugares','El sol cambia la regla'],'La condición es que el patio esté mojado, aunque haga sol.'],
+      [4,'Quiero prestar un libro cuando termine de leerlo. Aún me falta una página.','¿Qué orden respeta mi plan?','Terminar de leer y luego prestarlo',['Prestarlo y después terminar','Guardarlo sin terminar','Romper la página'],'Primero termino de leer; después puedo prestarlo.'],
+      [4,'Hay que llevar una botella y una colación. Max lleva ambas. Eva lleva solo botella.','¿Qué debe añadir Eva para cumplir la lista?','Una colación',['Otra botella','Un juguete','Nada'],'Eva ya lleva botella; le falta la colación.'],
+      [4,'El dibujo debe secarse antes de guardarlo. Todavía está húmedo, pero la carpeta ya está abierta.','¿Qué conviene hacer según la instrucción?','Esperar a que se seque',['Guardarlo ahora','Cerrar los ojos','Mojarlo más'],'La carpeta abierta no cambia la necesidad de que el dibujo se seque.'],
+      [4,'Pedí la pelota roja y me dieron la azul. Quiero aclarar cuál pedí.','¿Qué mensaje aclara el pedido?','Quería la pelota roja, por favor',['Dame eso','La otra cosa','Ya tengo una pelota'],'Nombrar la pelota y el color aclara cuál quiero.']
+    ]
+  };
+  function reasoningBank(game,level){return (reasoningRows[game]||[]).filter(r=>r[0]===level).map(([,context,text,answer,wrong,model])=>({context,text,answer,options:[answer,...wrong],model}));}
+  activities.push(
+    {id:'patrones',title:'¿Qué sigue?',subtitle:'Descubre la regla y completa el patrón.',tag:'RAZONAMIENTO · PATRONES',icon:'🔷',color:'blue',type:'24 retos de patrones',section:'razonar'},
+    {id:'pistas',title:'Detective de pistas',subtitle:'Une las pistas para encontrar la respuesta.',tag:'RAZONAMIENTO · DEDUCCIÓN',icon:'🕵️',color:'lilac',type:'24 retos de lógica',section:'razonar'},
+    {id:'soluciones',title:'Pienso una solución',subtitle:'Comprende el problema y elige qué hacer.',tag:'RAZONAMIENTO · VIDA DIARIA',icon:'💡',color:'yellow',type:'24 situaciones',section:'razonar'}
+  );
+  activities.find(a=>a.id==='ordenar').type='48 oraciones para ordenar';
+  activities.find(a=>a.id==='completar').type='32 frases para completar';
+  activities.find(a=>a.id==='historias').type='12 cuentos · 36 preguntas';
+  activities.find(a=>a.id==='puzle').type='Puzle de 4 a 16 piezas';
+  function questionBank(level){return level===4?advancedQuestions:level===3?[...challengeQuestions,...moreQuestions]:level===2?[...questions,...moreQuestions]:questions;}
+  function intruderBank(level){return level===4?advancedIntruders:level===3?trickyIntruders:intruders;}
+  function puzzleGrid(pieces){return {cols:pieces===4?2:pieces===6||pieces===9?3:4,rows:pieces===16?4:pieces===9||pieces===12?3:2};}
   function chooseVoice(voices,uri=''){
     const spanish=voices.filter(v=>/^es(?:[-_]|$)/i.test(v.lang));
     const score=v=>(/natural|neural|premium|enhanced/i.test(v.name)?20:0)+(/^es[-_]CL$/i.test(v.lang)?8:/^es[-_](MX|AR|US)$/i.test(v.lang)?5:0)+(v.default?1:0);
@@ -142,10 +283,10 @@ const LEARNING = (() => {
     const ids=cats.flatMap(cat=>{
       const vocabulary=Object.keys(words).filter(id=>words[id][2]===cat);
       const start=Math.floor(index/groups.length);
-      return Array.from({length:level===3?3:count===2?1:2},(_,i)=>vocabulary[(start+i)%vocabulary.length]);
+      return Array.from({length:level===4?4:level===3?3:count===2?1:2},(_,i)=>vocabulary[(start+i)%vocabulary.length]);
     });
     return {cats,ids:shuffle(ids)};
   }
-  return {words,categories,activities,intruders,questions,sequences,shuffle,choices,classifyRound,levels,questionBank,intruderBank,longSequences,puzzleGrid,chooseVoice,sentenceBank,completionBank,storyBank};
+  return {words,categories,activities,intruders,questions,sequences,shuffle,choices,classifyRound,levels,questionBank,intruderBank,longSequences,advancedSequences,puzzleGrid,chooseVoice,sentenceBank,completionBank,storyBank,reasoningBank};
 })();
 if (typeof module !== 'undefined') module.exports=LEARNING;

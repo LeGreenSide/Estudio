@@ -1,4 +1,4 @@
-name: Publicar A mi ritmo en GitHub Pages
+name: Publicar Max estudia en GitHub Pages
 
 on:
   workflow_dispatch:

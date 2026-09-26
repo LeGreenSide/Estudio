@@ -1,7 +1,7 @@
 // Run with the local preview open. Uses the bundled Playwright, no installation.
 const assert=require('node:assert/strict');
 const {chromium}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
-const {words,sentenceBank,completionBank,questionBank,intruderBank,storyBank}=require('./dist/data.js');
+const {words,sentenceBank,completionBank,questionBank,intruderBank,storyBank,reasoningBank}=require('./dist/data.js');
 (async()=>{
  const browser=await chromium.launch({headless:true});
  try{
@@ -12,9 +12,19 @@ const {words,sentenceBank,completionBank,questionBank,intruderBank,storyBank}=re
    const synth=new EventTarget();synth.getVoices=()=>window.fakeVoices;synth.cancel=()=>{};synth.speak=u=>window.speechLog.push({text:u.text,voice:u.voice?.voiceURI,lang:u.lang,rate:u.rate});
    Object.defineProperty(window,'speechSynthesis',{value:synth,configurable:true});
   });
-  const go=async(route,level)=>{const url=(process.env.TEST_URL||'http://127.0.0.1:4173')+'/#'+route;if(page.url()===url)await page.reload();else await page.goto(url);if(level)await page.locator('[data-level]').selectOption(String(level));};
+  const go=async(route,level)=>{const url=(process.env.TEST_URL||'http://127.0.0.1:4173')+'/#'+route;if(page.url()===url)await page.reload();else await page.goto(url);if(await page.locator('#entry').isVisible())await page.locator('[data-action="start"]').click();if(level)await page.locator('[data-level]').selectOption(String(level));};
   const answer=async id=>page.locator(`[data-answer="${id}"]`).click();
-  await go('inicio');assert.equal(await page.locator('.activity-card').count(),9);
+  await page.goto((process.env.TEST_URL||'http://127.0.0.1:4173')+'/#comunicar');
+  assert(await page.locator('#app-shell').isHidden());assert.equal(await page.evaluate(()=>speechLog.length),0);
+  await page.screenshot({path:'../tmp/max-entry.png',fullPage:true});
+  await page.keyboard.press('Enter');assert.equal(await page.evaluate(()=>speechLog.at(-1).text),'Hola Max');
+  assert(await page.locator('#entry').isHidden());assert.equal(await page.locator('.activity-card').count(),12);
+  assert.equal(await page.locator('[href="#comunicar"]').count(),0);assert((await page.title()).includes('Max estudia'));
+  await page.locator('#sound-toggle').click();
+  await go('inicio');assert.equal(await page.locator('.activity-card').count(),12);
+  assert.equal(await page.evaluate(()=>settings.victoryVolume),.65);
+  await go('razonar',4);assert.equal(await page.locator('.activity-card').count(),3);
+  console.log('OK: entrada obligatoria, saludo por clic, nombre, nivel 4 y sección de razonamiento');
   await go('completar',1);
   await answer('zapatos');assert(await page.locator('#victory-popup').isHidden());
   await answer('agua');assert.equal(await page.locator('#victory-title').textContent(),'¡Excelente!');assert(await page.locator('#victory-popup').isVisible());
@@ -28,10 +38,26 @@ const {words,sentenceBank,completionBank,questionBank,intruderBank,storyBank}=re
   await page.setViewportSize({width:1440,height:1000});
   console.log('OK: felicitaciones variadas, silencio, foco, Escape y popup móvil');
   if(process.env.VICTORY_ONLY==='1')return;
-  for(const level of (process.env.TEST_LEVELS==='none'?[]:(process.env.TEST_LEVELS||'1,2,3').split(',').map(Number))){
-   await go('clasificar',level);assert.equal(await page.locator('[data-piece]').count(),level===1?2:level===2?6:12);
-   assert.equal(await page.locator('[data-target]').count(),level+1);
-   await go('secuencia',level);assert.equal(await page.locator('[data-piece]').count(),level===1?2:level===2?4:5);
+  for(const level of (process.env.TEST_LEVELS==='none'?[]:(process.env.TEST_LEVELS||'1,2,3,4').split(',').map(Number))){
+   await go('clasificar',level);assert.equal(await page.locator('[data-piece]').count(),level===1?2:level===2?6:level===3?12:16);
+   assert.equal(await page.locator('[data-target]').count(),Math.min(level+1,4));
+   await go('secuencia',level);assert.equal(await page.locator('[data-piece]').count(),level===1?2:level===2?4:level===3?5:7);
+   if(level===4){
+    for(let i=0;i<7;i++){await page.locator(`[data-piece="${i}"]`).click();await page.locator(`[data-target="${i}"]`).click();}
+    assert(await page.locator('#victory-popup').isVisible());
+    await go('puzle',4);assert.equal(await page.locator('[data-piece]').count(),16);
+    for(let i=0;i<16;i++){await page.locator(`[data-piece="${i}"]`).click();await page.locator(`[data-target="${i}"]`).click();}
+    assert(await page.locator('#victory-popup').isVisible());
+   }
+   for(const game of ['patrones','pistas','soluciones']){
+    await go(game,level);
+    for(const q of reasoningBank(game,level)){
+     const wrong=await page.locator('[data-answer]').evaluateAll((nodes,correct)=>nodes.find(n=>n.dataset.answer!==correct).dataset.answer,q.answer);
+     await answer(wrong);assert(await page.locator('#victory-popup').isHidden());
+     await page.locator('[data-action="hint"]').click();await answer(q.answer);
+     assert.equal(await page.locator('#feedback').textContent(),q.model);await page.locator('[data-action="victory-next"]').click();
+    }
+   }
    await go('ordenar',level);
    for(const sentence of sentenceBank(level)){
     for(let target=0;target<sentence.tokens.length;target++){
@@ -81,19 +107,26 @@ const {words,sentenceBank,completionBank,questionBank,intruderBank,storyBank}=re
   console.log('OK: selección de voz, carga tardía, silencio, desactivar victoria y pausa');
   for(const width of [390,768,1440]){
    await page.setViewportSize({width,height:950});
-   for(const route of ['inicio','ordenar','completar','historias','puzle','frases']){await go(route,route==='inicio'?undefined:3);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'overflow '+route+' '+width);}
+   for(const route of ['inicio','ordenar','completar','historias','puzle','frases','razonar','patrones','pistas','soluciones']){await go(route,4);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'overflow '+route+' '+width);}
   }
   await page.setViewportSize({width:390,height:844});await go('ordenar',3);await page.screenshot({path:'../tmp/oraciones-mobile.png',fullPage:true});
   for(const route of ['ordenar','completar','historias','frases']){await go(route,3);await page.evaluate(()=>document.documentElement.style.fontSize='200%');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'texto ampliado '+route);}
   await page.setViewportSize({width:1440,height:1000});await go('inicio');await page.evaluate(()=>document.documentElement.style.fontSize='');await page.screenshot({path:'../tmp/new-home.png',fullPage:true});await go('puzle',3);await page.screenshot({path:'../tmp/puzzle12.png',fullPage:true});
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});const touch=await context.newPage();
-  await touch.goto((process.env.TEST_URL||'http://127.0.0.1:4173')+'/#ordenar');await touch.locator('[data-level]').selectOption('1');
+  await touch.goto((process.env.TEST_URL||'http://127.0.0.1:4173')+'/#ordenar');assert(await touch.locator('#app-shell').isHidden());await touch.locator('#start-sound').uncheck();await touch.locator('[data-action="start"]').click();await touch.locator('[data-level]').selectOption('1');
   await touch.locator('.word-slots').evaluate(el=>window.scrollTo(0,el.getBoundingClientRect().top+window.scrollY-170));
   const from=await touch.locator('[data-piece="0"]').boundingBox(),to=await touch.locator('[data-target="0"]').boundingBox();const cdp=await context.newCDPSession(touch);
   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:from.x+from.width/2,y:from.y+from.height/2}]});
   for(let i=1;i<=8;i++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:from.x+from.width/2+(to.x+to.width/2-from.x-from.width/2)*i/8,y:from.y+from.height/2+(to.y+to.height/2-from.y-from.height/2)*i/8}]});
   await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});assert.equal(await touch.locator('[data-piece="0"]').count(),0);
   console.log('OK: arrastre táctil de palabras y texto al 200 %');
+  await page.evaluate(()=>localStorage.setItem('a-mi-ritmo-preferences',JSON.stringify({level:3,sound:false,victoryVolume:.35})));
+  await page.reload();assert(await page.locator('#entry').isVisible());
+  assert.equal(await page.evaluate(()=>settings.victoryVolume),.65);assert.equal(await page.locator('#start-sound').isChecked(),false);
+  await page.locator('[data-action="start"]').click();
+  await page.locator('[data-action="settings"]').first().click();await page.selectOption('#victory-volume','1');await page.getByRole('button',{name:'Guardar ajustes'}).click();
+  await page.reload();assert.equal(await page.evaluate(()=>settings.victoryVolume),1);
+  console.log('OK: volumen anterior actualizado, silencio conservado y volumen Alto persistente');
   assert.deepEqual(errors,[]);console.log('OK: mensajes largos, móvil, recursos y cero errores de ejecución');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1);});

@@ -5,19 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#14695f">
   <meta name="description" content="Juegos visuales para explorar palabras, comprender preguntas y comunicar lo que necesitas, a tu ritmo.">
-  <title>A mi ritmo · Jugar y comunicar</title>
+  <title>Max estudia · Jugar y comunicar</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%2314695f'/%3E%3Cpath d='M10 12h20v14H18l-7 5v-5h-1z' fill='%23fff'/%3E%3Ccircle cx='17' cy='19' r='2' fill='%2314695f'/%3E%3Ccircle cx='24' cy='19' r='2' fill='%2314695f'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
   <script src="data.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
+  <section id="entry" class="entry-screen" aria-labelledby="entry-title">
+    <div class="entry-card">
+      <div class="entry-art" aria-hidden="true"><span>📖</span><span>🧩</span><span>💡</span></div>
+      <p class="eyebrow">TU ESPACIO PARA DESCUBRIR</p>
+      <h1 id="entry-title">Max estudia<span>Un pequeño paso.<br>Una nueva idea.</span></h1>
+      <p>Juegos, palabras y retos para aprender a tu ritmo.</p>
+      <button class="primary start-button" data-action="start">Iniciar <span aria-hidden="true">→</span></button>
+      <label class="entry-sound"><input id="start-sound" type="checkbox" checked> Entrar con sonido · «Hola Max»</label>
+      <p class="entry-note">Puedes parar, pedir ayuda y volver a intentarlo.</p>
+    </div>
+  </section>
+  <div id="app-shell" hidden>
   <a class="skip-link" href="#main">Ir a las actividades</a>
   <aside class="sidebar">
-    <a class="brand" href="#inicio" aria-label="A mi ritmo, inicio"><span class="brand-mark" aria-hidden="true">a<span>·</span></span><span>a mi ritmo<small>JUGAR Y COMUNICAR</small></span></a>
+    <a class="brand" href="#inicio" aria-label="Max estudia, inicio"><span class="brand-mark" aria-hidden="true">M<span>·</span></span><span>Max estudia<small>JUGAR Y COMUNICAR</small></span></a>
     <nav aria-label="Navegación principal">
       <a href="#inicio" data-nav="inicio"><span aria-hidden="true">⌂</span> Mis actividades</a>
-      <a href="#comunicar" data-nav="comunicar"><span aria-hidden="true">☏</span> Quiero decir</a>
+      <a href="#razonar" data-nav="razonar"><span aria-hidden="true">✧</span> Razonamiento</a>
       <a href="#familia" data-nav="familia"><span aria-hidden="true">♡</span> En familia</a>
     </nav>
     <div class="sidebar-note"><span aria-hidden="true">☀</span><strong>Cada intento cuenta.</strong><p>Hay muchas maneras<br>de comunicarnos.</p></div>
@@ -27,7 +39,8 @@
     <header class="topbar"><span>Un espacio para aprender juntos</span><div><button class="quiet-btn" id="sound-toggle" data-action="sound" aria-pressed="false">Sonido: apagado</button><button class="quiet-btn pause-btn" data-action="pause">Ⅱ <span>Descansar</span></button><button class="quiet-btn" data-action="settings" aria-label="Ajustes para mí">⚙</button></div></header>
     <p id="audio-status" class="audio-notice" role="status" hidden></p>
     <main id="main" tabindex="-1"></main>
-    <footer class="communication-bar" aria-label="Puedo comunicarme en cualquier momento"><span>Quiero decir</span><button data-say="Necesito ayuda">🤝 <span>Ayuda</span></button><button data-say="No quiero">✋ <span>No quiero</span></button><button data-action="pause">🌿 <span>Descanso</span></button><a href="#comunicar">Más palabras <span aria-hidden="true">↗</span></a></footer>
+
+  </div>
   </div>
   <div id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
