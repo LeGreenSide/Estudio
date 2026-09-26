@@ -18,37 +18,42 @@ const messageWords=['agua','comer','jugar','dormir','manzana','pelota','ayuda','
 const phraseWord=id=>({manzana:'una manzana',pelota:'una pelota'}[id]||words[id][1].toLowerCase());
 function announce(text){document.getElementById('announcement').textContent=text;}
 function feedback(text,success=false){const box=document.getElementById('feedback');if(box){box.textContent=text;box.classList.toggle('success',success);}announce(text);}
-let audioContext, tones=[], speechTimer, audioEpoch=0, narrationAudio;
+let audioEpoch=0, narrationAudio;
 function audioNotice(text){
  const box=document.getElementById(dialog.open?'voice-status':'audio-status');if(box){box.hidden=false;box.textContent=text;}announce(text);
 }
+// Reuse the media player unlocked by Iniciar, including when a touch drag completes.
+function playAudio(files,{rate=1,volume=1},onEnded,onError){
+ const epoch=audioEpoch;let index=0,failed=false;
+ narrationAudio??=new Audio();
+ const fallback=()=>{
+  if(epoch!==audioEpoch||failed)return;failed=true;
+  narrationAudio.onended=null;narrationAudio.onerror=null;narrationAudio.pause();onError();
+ };
+ const play=()=>{
+  if(epoch!==audioEpoch)return;
+  narrationAudio.src=files[index];narrationAudio.volume=volume;
+  narrationAudio.playbackRate=rate;narrationAudio.preservesPitch=true;
+  narrationAudio.onended=()=>{if(epoch!==audioEpoch)return;if(++index<files.length)play();else onEnded?.();};
+  narrationAudio.onerror=fallback;narrationAudio.play().catch(fallback);
+ };
+ play();
+}
 function speak(text,options=settings){
-  if(!options.sound)return;
-  stopSpeech();
-  if(options.voice==='recorded:catalina'&&typeof RECORDED_VOICE!=='undefined'){
-    const praise=praiseWords.find(p=>text.startsWith(p+' '));
-    const parts=praise?[praise,text.slice(praise.length).trim()]:[text];
-    const files=parts.map(part=>RECORDED_VOICE.files[LEARNING.voiceKey(part)]);
-    if(files.every(Boolean)){
-      const epoch=audioEpoch;let index=0,failed=false;
-      narrationAudio??=new Audio();
-      const fallback=()=>{
-        if(epoch!==audioEpoch||failed)return;failed=true;
-        narrationAudio.onended=null;narrationAudio.onerror=null;narrationAudio.pause();
-        audioNotice('No se pudo cargar Catalina. Usaremos la voz del dispositivo para este mensaje.');
-        speakDevice(text,{...options,voice:''});
-      };
-      const play=()=>{
-        if(epoch!==audioEpoch)return;
-        narrationAudio.src='assets/voice/'+files[index];
-        narrationAudio.volume=.95;narrationAudio.playbackRate=options.rate/.95;narrationAudio.preservesPitch=true;
-        narrationAudio.onended=()=>{if(epoch===audioEpoch&&++index<files.length)play();};
-        narrationAudio.onerror=fallback;narrationAudio.play().catch(fallback);
-      };
-      play();return;
-    }
+ if(!options.sound)return;
+ stopSpeech();
+ if(options.voice==='recorded:catalina'&&typeof RECORDED_VOICE!=='undefined'){
+  const praise=praiseWords.find(p=>text.startsWith(p+' '));
+  const parts=praise?[praise,text.slice(praise.length).trim()]:[text];
+  const files=parts.map(part=>RECORDED_VOICE.files[LEARNING.voiceKey(part)]);
+  if(files.every(Boolean)){
+   playAudio(files.map(file=>'assets/voice/'+file),{rate:options.rate/.95,volume:.95},null,()=>{
+    audioNotice('No se pudo cargar Catalina. Usaremos la voz del dispositivo para este mensaje.');
+    speakDevice(text,{...options,voice:''});
+   });return;
   }
-  speakDevice(text,options);
+ }
+ speakDevice(text,options);
 }
 function speakDevice(text,options){
   if(!('speechSynthesis' in window)){audioNotice('Este navegador no tiene voz. Puedes seguir usando las imágenes y el texto.');return;}
@@ -60,10 +65,9 @@ function speakDevice(text,options){
   speechSynthesis.speak(utterance);
 }
 function stopSpeech(){
- audioEpoch++;clearTimeout(speechTimer);
+ audioEpoch++;
  if(narrationAudio){narrationAudio.onended=null;narrationAudio.onerror=null;narrationAudio.pause();narrationAudio.removeAttribute('src');narrationAudio.load();}
  if('speechSynthesis' in window)speechSynthesis.cancel();
- tones.forEach(t=>{try{t.stop();}catch{}});tones=[];
 }
 function celebrate(text,options=settings){
  stopSpeech();
@@ -75,27 +79,13 @@ function celebrate(text,options=settings){
  }
  if(!options.sound)return;
  if(!options.victory){if(text)speak(text,options);return;}
- const epoch=audioEpoch;
- try{
-  const Context=window.AudioContext||window.webkitAudioContext;
-  if(!Context)throw new Error('Audio unavailable');
-  audioContext??=new Context();
-  Promise.resolve(audioContext.resume()).then(()=>{
-   if(epoch!==audioEpoch)return;
-   const start=audioContext.currentTime+.02;
-   // Short repeated brass-like notes, rising phrase, then a sustained major chord.
-   [[523.25,0,.12],[523.25,.17,.12],[523.25,.34,.12],[659.25,.52,.19],[783.99,.77,.22],
-    [523.25,1.03,.55],[659.25,1.03,.55],[783.99,1.03,.55],[1046.5,1.03,.55]].forEach(([frequency,offset,duration])=>{
-    const oscillator=audioContext.createOscillator(),gain=audioContext.createGain();
-    const at=start+offset;oscillator.type='triangle';oscillator.frequency.value=frequency;
-    gain.gain.setValueAtTime(0,at);gain.gain.linearRampToValueAtTime(.18*options.victoryVolume,at+.015);gain.gain.exponentialRampToValueAtTime(.0001,at+duration);
-    oscillator.connect(gain);gain.connect(audioContext.destination);oscillator.start(at);oscillator.stop(at+duration+.02);tones.push(oscillator);
-    oscillator.onended=()=>{oscillator.disconnect();gain.disconnect();tones=tones.filter(t=>t!==oscillator);};
-   });
-   if(text)speechTimer=setTimeout(()=>{if(epoch===audioEpoch)speak(text,options);},1750);
-  }).catch(()=>{if(epoch===audioEpoch){audioNotice('El sonido de victoria no está disponible en este navegador.');if(text)speak(text,options);}});
- }catch{audioNotice('El sonido de victoria no está disponible en este navegador.');if(text)speak(text,options);}
+ const next=()=>{if(text)speak(text,options);};
+ const volume=[.25,.65,1].includes(options.victoryVolume)?options.victoryVolume:.65;
+ playAudio(['assets/fanfare-'+Math.round(volume*100)+'.wav'],{},next,()=>{
+  audioNotice('No se pudo cargar la fanfarria. Puedes seguir jugando.');next();
+ });
 }
+
 function voiceOptions(selected){
  const voices='speechSynthesis' in window?speechSynthesis.getVoices().filter(v=>/^es(?:[-_]|$)/i.test(v.lang)):[];
  return `<option value="recorded:catalina" ${selected==='recorded:catalina'?'selected':''}>Catalina · voz natural de Chile</option><option value="" ${selected===''?'selected':''}>Automática · voz del dispositivo</option>${voices.map(v=>`<option value="${escapeHTML(v.voiceURI)}" ${v.voiceURI===selected?'selected':''}>${escapeHTML(v.name)} · ${escapeHTML(v.lang)}${v.localService?'':' · en línea'}</option>`).join('')}${selected&&selected!=='recorded:catalina'&&!voices.some(v=>v.voiceURI===selected)?`<option value="${escapeHTML(selected)}" selected>Voz guardada no disponible · se usará automática</option>`:''}`;

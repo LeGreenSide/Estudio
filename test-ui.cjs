@@ -88,23 +88,23 @@ const {words,sentenceBank,completionBank,questionBank,intruderBank,storyBank,rea
   await go('puzle',3);assert.equal(await page.locator('[data-piece]').count(),12);assert.equal(await page.locator('.puzzle-tray .tile span').count(),0);
   await page.locator('#sound-toggle').click();
   for(let i=0;i<12;i++){await page.locator(`[data-piece="${i}"]`).click();await page.locator(`[data-target="${i}"]`).click();}
-  await page.waitForFunction(()=>tones.length>0);assert.equal(await page.evaluate(()=>audioContext.state),'running');
+  await page.waitForFunction(()=>narrationAudio?.currentSrc.includes('fanfare-')&&narrationAudio.currentTime>0);
   await page.waitForFunction(()=>speechLog.at(-1)?.text.includes('¡La imagen está completa!'));
   assert.equal(await page.evaluate(()=>speechLog.at(-1).voice),'mx');
-  console.log('OK: 12 piezas, fanfarria real de Web Audio y voz posterior');
+  console.log('OK: 12 piezas, fanfarria grabada y voz posterior');
   await page.locator('[data-action="settings"]').first().click();
   await page.selectOption('#voice-select','cl');await page.selectOption('#speech-rate','0.95');
   await page.locator('[data-action="preview-voice"]').click();assert.equal(await page.evaluate(()=>speechLog.at(-1).voice),'cl');assert.equal(await page.evaluate(()=>speechLog.at(-1).rate),.95);
   await page.evaluate(()=>{fakeVoices.push({name:'Nueva',lang:'es-ES',voiceURI:'new',localService:true});speechSynthesis.dispatchEvent(new Event('voiceschanged'));});
   assert.equal(await page.locator('#voice-select').inputValue(),'cl');assert.equal(await page.locator('#voice-select option[value="new"]').count(),1);
   await page.locator('[name="victory"]').uncheck();await page.getByRole('button',{name:'Guardar ajustes'}).click();
-  await go('completar');await answer(completionBank(3)[0].answer);assert.equal(await page.evaluate(()=>tones.length),0);assert.equal(await page.evaluate(()=>speechLog.at(-1).voice),'cl');
+  await go('completar');await answer(completionBank(3)[0].answer);assert(await page.evaluate(()=>!narrationAudio||narrationAudio.paused));assert.equal(await page.evaluate(()=>speechLog.at(-1).voice),'cl');
   // Enabling celebrations again, then pausing, must cancel pending speech.
   await page.locator('[data-action="settings"]').first().click();await page.locator('[name="victory"]').check();await page.getByRole('button',{name:'Guardar ajustes'}).click();
   await page.evaluate(()=>speechLog.length=0);await answer(completionBank(3)[0].answer);await page.locator('[data-action="pause"]').first().click();
-  await page.waitForTimeout(1900);assert.equal(await page.evaluate(()=>speechLog.length),0);assert.equal(await page.evaluate(()=>tones.length),0);await page.keyboard.press('Escape');
+  await page.waitForTimeout(1900);assert.equal(await page.evaluate(()=>speechLog.length),0);assert(await page.evaluate(()=>!narrationAudio||narrationAudio.paused));await page.keyboard.press('Escape');
   await page.locator('#sound-toggle').click();await go('completar');await page.evaluate(()=>speechLog.length=0);await answer(completionBank(3)[0].answer);
-  assert.equal(await page.evaluate(()=>tones.length),0);assert.equal(await page.evaluate(()=>speechLog.length),0);
+  assert(await page.evaluate(()=>!narrationAudio||narrationAudio.paused));assert.equal(await page.evaluate(()=>speechLog.length),0);
   console.log('OK: selección de voz, carga tardía, silencio, desactivar victoria y pausa');
   for(const width of [390,768,1440]){
    await page.setViewportSize({width,height:950});

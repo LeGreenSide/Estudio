@@ -74,5 +74,15 @@ for(const item of catalog){assert.equal(recorded.files[item.key],item.file);asse
 assert.equal(new Set(Object.values(recorded.files)).size,catalog.length);
 const {voiceKey}=require('./dist/data.js');
 assert.equal(voiceKey('¡Hola, Max!'),voiceKey('Hola Max'));assert.notEqual(voiceKey('sí'),voiceKey('si'));
+let previousEnergy=0;
+for(const level of [25,65,100]){
+ const wav=readFileSync(`./dist/assets/fanfare-${level}.wav`);
+ assert.equal(wav.toString('ascii',0,4),'RIFF');assert.equal(wav.toString('ascii',8,12),'WAVE');
+ assert.equal(wav.readUInt32LE(24),22050);assert.equal(wav.readUInt16LE(34),16);
+ let energy=0,peak=0;
+ for(let i=44;i<wav.length;i+=2){const value=wav.readInt16LE(i);energy+=value*value;peak=Math.max(peak,Math.abs(value));}
+ assert(energy>previousEnergy&&peak<32767);previousEnergy=energy;
+ assert(Math.abs((wav.length-44)/2/22050-1.68)<.01);
+}
 console.log('OK: categorías, respuestas, opciones, secuencias, puzles y recursos.');
 console.log('OK: catálogo de voz completo y archivos de audio.');
