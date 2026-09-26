@@ -39,6 +39,16 @@ El niño puede señalar, mirar, hacer gestos o hablar. No se exige repetir, mira
 
 ## Verificar
 
+## GitHub Pages
+
+El repositorio privado es `LeGreenSide/Estudio`. El flujo `.github/workflows/pages.yml` publica únicamente la carpeta `dist`, después de verificar el contenido y el JavaScript. No publica los archivos de pruebas, la configuración local de Sites ni el PDF de la guía.
+
+Para publicar, primero debe habilitarse Pages con origen **GitHub Actions** en los ajustes del repositorio; después se ejecuta manualmente **Publicar A mi ritmo en GitHub Pages** desde Actions. La configuración por sí sola no activa ni ejecuta la publicación.
+
+GitHub Pages en repositorios privados requiere un plan compatible (por ejemplo, GitHub Pro). La web de Pages será pública aunque este repositorio continúe privado. No se modifica la visibilidad del repositorio para habilitar Pages.
+
+## Pruebas
+
 `node test.cjs`
 
 Comprueba las categorías, respuestas, cantidad de alternativas, secuencias y recursos sin instalar un framework. Para modificar el vocabulario y las preguntas, edita `dist/data.js`.
