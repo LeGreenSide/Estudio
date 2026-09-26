@@ -26,9 +26,9 @@ Al abrir la página aparece **Iniciar**. Tras pulsarlo se entra y se escucha **H
 
 Las victorias muestran Excelente, Increíble, Bien hecho, Lo lograste o Muy bien. La fanfarria precede a la voz, tiene volumen independiente (Suave, Medio y Alto) y puede desactivarse. El volumen predeterminado aumentó; los antiguos valores bajos se migran a Medio. Cerrar la felicitación, descansar o navegar cancela la reproducción pendiente.
 
-La voz predeterminada es **Catalina Neural, español de Chile**, una voz sintética neuronal de Microsoft. Los audios de los textos de la app se preparan antes de publicar y se sirven desde este mismo sitio; jugar no envía los mensajes del niño a un servicio de generación. Solo se descarga el audio solicitado. La velocidad se puede cambiar sin alterar el tono.
+La voz predeterminada es **Catalina Neural, español de Chile**, una voz sintética neuronal de Microsoft. Los audios de los textos de la app se preparan antes de publicar y se sirven desde este mismo sitio; reproducir estos audios no envía mensajes a un servicio de generación. Solo se descarga el audio solicitado. La velocidad se puede cambiar sin alterar el tono.
 
-En Ajustes puedes probar Catalina o elegir una voz del dispositivo. Si falta un audio o falla su descarga, se usa la voz del navegador como respaldo. Las preferencias antiguas se actualizan una vez a Catalina; después se respeta la voz elegida. La calidad y disponibilidad del respaldo dependen del dispositivo.
+En Ajustes puedes probar Catalina o elegir una voz del dispositivo. Si falta un audio o falla su descarga, se usa la voz del navegador como respaldo. Las preferencias antiguas se actualizan una vez a Catalina; después se respeta la voz elegida. La calidad y disponibilidad del respaldo dependen del dispositivo; algunas voces alternativas utilizan servicios en línea.
 
 ## Uso local
 
