@@ -3,11 +3,12 @@ const main=document.getElementById('main');
 const dialog=document.getElementById('dialog');
 const victoryPopup=document.getElementById('victory-popup');
 let victoryCount=0;
+const praiseWords=['¡Excelente!','¡Increíble!','¡Bien hecho!','¡Lo lograste!','¡Muy bien!'];
 function hideVictory(){victoryPopup.hidden=true;}
 const {words,categories,activities,intruders,questions,sequences,shuffle,choices,classifyRound,levels,questionBank,intruderBank,longSequences,puzzleGrid,chooseVoice,sentenceBank,completionBank,storyBank,reasoningBank,advancedSequences}=LEARNING;
-const defaults={sound:true,level:2,choices:4,pieces:6,calm:false,rate:.95,voice:'',victory:true,victoryVolume:.65};
+const defaults={sound:true,level:2,choices:4,pieces:6,calm:false,rate:.95,voice:'recorded:catalina',voiceVersion:1,victory:true,victoryVolume:.65};
 let settings={...defaults};
-try{const s=JSON.parse(localStorage.getItem('a-mi-ritmo-preferences'))||{};settings={sound:s.sound!==false,level:[1,2,3,4].includes(s.level)?s.level:2,choices:s.level&&[2,3,4].includes(s.choices)?s.choices:4,pieces:s.level&&[4,6,8,9,12,16].includes(s.pieces)?s.pieces:6,calm:s.calm===true,rate:[.7,.85,.95,1].includes(s.rate)?s.rate:.95,voice:typeof s.voice==='string'?s.voice:'',victory:s.victory!==false,victoryVolume:[.25,.65,1].includes(s.victoryVolume)?s.victoryVolume:.65};}catch{}
+try{const s=JSON.parse(localStorage.getItem('a-mi-ritmo-preferences'))||{};settings={sound:s.sound!==false,level:[1,2,3,4].includes(s.level)?s.level:2,choices:s.level&&[2,3,4].includes(s.choices)?s.choices:4,pieces:s.level&&[4,6,8,9,12,16].includes(s.pieces)?s.pieces:6,calm:s.calm===true,rate:[.7,.85,.95,1].includes(s.rate)?s.rate:.95,voice:s.voiceVersion===1&&typeof s.voice==='string'?s.voice:'recorded:catalina',voiceVersion:1,victory:s.victory!==false,victoryVolume:[.25,.65,1].includes(s.victoryVolume)?s.victoryVolume:.65};}catch{}
 let started=false;
 const reasoningGames=activities.filter(a=>a.section==='razonar').map(a=>a.id);
 const answerGames=['intruso','preguntas','completar','historias',...reasoningGames];
@@ -17,13 +18,39 @@ const messageWords=['agua','comer','jugar','dormir','manzana','pelota','ayuda','
 const phraseWord=id=>({manzana:'una manzana',pelota:'una pelota'}[id]||words[id][1].toLowerCase());
 function announce(text){document.getElementById('announcement').textContent=text;}
 function feedback(text,success=false){const box=document.getElementById('feedback');if(box){box.textContent=text;box.classList.toggle('success',success);}announce(text);}
-let audioContext, tones=[], speechTimer, audioEpoch=0;
+let audioContext, tones=[], speechTimer, audioEpoch=0, narrationAudio;
 function audioNotice(text){
  const box=document.getElementById(dialog.open?'voice-status':'audio-status');if(box){box.hidden=false;box.textContent=text;}announce(text);
 }
 function speak(text,options=settings){
   if(!options.sound)return;
   stopSpeech();
+  if(options.voice==='recorded:catalina'&&typeof RECORDED_VOICE!=='undefined'){
+    const praise=praiseWords.find(p=>text.startsWith(p+' '));
+    const parts=praise?[praise,text.slice(praise.length).trim()]:[text];
+    const files=parts.map(part=>RECORDED_VOICE.files[LEARNING.voiceKey(part)]);
+    if(files.every(Boolean)){
+      const epoch=audioEpoch;let index=0,failed=false;
+      narrationAudio??=new Audio();
+      const fallback=()=>{
+        if(epoch!==audioEpoch||failed)return;failed=true;
+        narrationAudio.onended=null;narrationAudio.onerror=null;narrationAudio.pause();
+        audioNotice('No se pudo cargar Catalina. Usaremos la voz del dispositivo para este mensaje.');
+        speakDevice(text,{...options,voice:''});
+      };
+      const play=()=>{
+        if(epoch!==audioEpoch)return;
+        narrationAudio.src='assets/voice/'+files[index];
+        narrationAudio.volume=.95;narrationAudio.playbackRate=options.rate/.95;narrationAudio.preservesPitch=true;
+        narrationAudio.onended=()=>{if(epoch===audioEpoch&&++index<files.length)play();};
+        narrationAudio.onerror=fallback;narrationAudio.play().catch(fallback);
+      };
+      play();return;
+    }
+  }
+  speakDevice(text,options);
+}
+function speakDevice(text,options){
   if(!('speechSynthesis' in window)){audioNotice('Este navegador no tiene voz. Puedes seguir usando las imágenes y el texto.');return;}
   const utterance=new SpeechSynthesisUtterance(text);
   const voice=chooseVoice(speechSynthesis.getVoices(),options.voice);
@@ -34,13 +61,14 @@ function speak(text,options=settings){
 }
 function stopSpeech(){
  audioEpoch++;clearTimeout(speechTimer);
+ if(narrationAudio){narrationAudio.onended=null;narrationAudio.onerror=null;narrationAudio.pause();narrationAudio.removeAttribute('src');narrationAudio.load();}
  if('speechSynthesis' in window)speechSynthesis.cancel();
  tones.forEach(t=>{try{t.stop();}catch{}});tones=[];
 }
 function celebrate(text,options=settings){
  stopSpeech();
  if(text){
-  const praise=['¡Excelente!','¡Increíble!','¡Bien hecho!','¡Lo lograste!','¡Muy bien!'][victoryCount++%5];
+  const praise=praiseWords[victoryCount++%praiseWords.length];
   document.getElementById('victory-title').textContent=praise;
   document.getElementById('victory-message').textContent=text;
   victoryPopup.hidden=false;text=praise+' '+text;announce(text);
@@ -70,7 +98,7 @@ function celebrate(text,options=settings){
 }
 function voiceOptions(selected){
  const voices='speechSynthesis' in window?speechSynthesis.getVoices().filter(v=>/^es(?:[-_]|$)/i.test(v.lang)):[];
- return `<option value="">Automática · español</option>${voices.map(v=>`<option value="${escapeHTML(v.voiceURI)}" ${v.voiceURI===selected?'selected':''}>${escapeHTML(v.name)} · ${escapeHTML(v.lang)}${v.localService?'':' · en línea'}</option>`).join('')}${selected&&!voices.some(v=>v.voiceURI===selected)?`<option value="${escapeHTML(selected)}" selected>Voz guardada no disponible · se usará automática</option>`:''}`;
+ return `<option value="recorded:catalina" ${selected==='recorded:catalina'?'selected':''}>Catalina · voz natural de Chile</option><option value="" ${selected===''?'selected':''}>Automática · voz del dispositivo</option>${voices.map(v=>`<option value="${escapeHTML(v.voiceURI)}" ${v.voiceURI===selected?'selected':''}>${escapeHTML(v.name)} · ${escapeHTML(v.lang)}${v.localService?'':' · en línea'}</option>`).join('')}${selected&&selected!=='recorded:catalina'&&!voices.some(v=>v.voiceURI===selected)?`<option value="${escapeHTML(selected)}" selected>Voz guardada no disponible · se usará automática</option>`:''}`;
 }
 if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.addEventListener('voiceschanged',()=>{const select=document.getElementById('voice-select');if(select)select.innerHTML=voiceOptions(select.value);});}
 function levelPicker(id){return `<label class="level-picker" for="${id}">Nivel<select id="${id}" data-level>${Object.entries(levels).map(([n,l])=>`<option value="${n}" ${settings.level===Number(n)?'selected':''}>${n} · ${l.name}</option>`).join('')}</select></label>`;}
@@ -88,7 +116,7 @@ function showSettings(){
  <label for="choice-count">Máximo de respuestas para elegir</label><p class="settings-help">El juego del diferente usa al menos tres imágenes para que se reconozca el grupo.</p><select id="choice-count" name="choices">${[2,3,4].map(n=>`<option value="${n}" ${settings.choices===n?'selected':''}>${n} imágenes</option>`).join('')}</select>
  <label for="piece-count">Piezas del puzle</label><select id="piece-count" name="pieces">${[4,6,8,9,12,16].map(n=>`<option value="${n}" ${settings.pieces===n?'selected':''}>${n} piezas</option>`).join('')}</select>
  <label class="check-line"><input name="sound" type="checkbox" ${settings.sound?'checked':''}> Activar sonido</label>
- <label for="voice-select">Voz en español</label><select id="voice-select" name="voice">${voiceOptions(settings.voice)}</select><p class="settings-help">Automática prioriza voces marcadas como naturales y el español de Chile o Latinoamérica, si están disponibles. Las voces en línea necesitan conexión.</p>
+ <label for="voice-select">Voz en español</label><select id="voice-select" name="voice">${voiceOptions(settings.voice)}</select><p class="settings-help">Catalina es una voz sintética neuronal en español de Chile, con audios preparados para estos juegos. Se descargan al escucharlos. También puedes elegir una voz de tu dispositivo; si un audio no está disponible, se usará esa alternativa.</p>
  <label for="speech-rate">Velocidad de la voz</label><select id="speech-rate" name="rate">${[[.7,'Muy pausada'],[.85,'Pausada'],[.95,'Conversación tranquila'],[1,'Normal']].map(([n,l])=>`<option value="${n}" ${settings.rate===n?'selected':''}>${l}</option>`).join('')}</select>
  <button type="button" class="secondary audio-preview" data-action="preview-voice">Probar esta voz</button><p id="voice-status" class="settings-help" role="status">La prueba se escucha aunque el sonido general esté apagado.</p>
  <label class="check-line"><input name="victory" type="checkbox" ${settings.victory?'checked':''}> Fanfarria al completar una actividad</label>
@@ -286,7 +314,7 @@ dialog.addEventListener('close',stopSpeech);
 dialog.addEventListener('submit',event=>{
  if(event.target.id!=='settings-form')return;
  event.preventDefault();const data=new FormData(event.target);
- settings={level:Number(data.get('level')),choices:Number(data.get('choices')),pieces:Number(data.get('pieces')),rate:Number(data.get('rate')),voice:data.get('voice'),sound:data.has('sound'),calm:data.has('calm'),victory:data.has('victory'),victoryVolume:Number(data.get('victoryVolume'))};applySettings();dialog.close();navigate();announce('Ajustes guardados.');
+ settings={level:Number(data.get('level')),choices:Number(data.get('choices')),pieces:Number(data.get('pieces')),rate:Number(data.get('rate')),voice:data.get('voice'),voiceVersion:1,sound:data.has('sound'),calm:data.has('calm'),victory:data.has('victory'),victoryVolume:Number(data.get('victoryVolume'))};applySettings();dialog.close();navigate();announce('Ajustes guardados.');
 });
 // Pointer events cover mouse, pen and touch. The same place() handles click/keyboard.
 function trackDrag(){

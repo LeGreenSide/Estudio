@@ -7,6 +7,7 @@ const {words,sentenceBank,completionBank,questionBank,intruderBank,storyBank,rea
  try{
   const page=await browser.newPage({viewport:{width:1440,height:1000}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(()=>{
+   if(!localStorage.getItem('a-mi-ritmo-preferences'))localStorage.setItem('a-mi-ritmo-preferences',JSON.stringify({voice:'',voiceVersion:1}));
    window.speechLog=[];window.fakeVoices=[{name:'Español Chile',lang:'es-CL',voiceURI:'cl',localService:true},{name:'Español Natural',lang:'es-MX',voiceURI:'mx',localService:false},{name:'English',lang:'en-US',voiceURI:'en'}];
    window.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};
    const synth=new EventTarget();synth.getVoices=()=>window.fakeVoices;synth.cancel=()=>{};synth.speak=u=>window.speechLog.push({text:u.text,voice:u.voice?.voiceURI,lang:u.lang,rate:u.rate});

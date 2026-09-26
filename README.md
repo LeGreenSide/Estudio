@@ -26,7 +26,9 @@ Al abrir la página aparece **Iniciar**. Tras pulsarlo se entra y se escucha **H
 
 Las victorias muestran Excelente, Increíble, Bien hecho, Lo lograste o Muy bien. La fanfarria precede a la voz, tiene volumen independiente (Suave, Medio y Alto) y puede desactivarse. El volumen predeterminado aumentó; los antiguos valores bajos se migran a Medio. Cerrar la felicitación, descansar o navegar cancela la reproducción pendiente.
 
-Las voces dependen del navegador y del dispositivo. La selección automática prioriza voces en español marcadas como naturales, seguidas del idioma regional. Se puede elegir y probar una voz en Ajustes; las voces en línea requieren conexión. La calidad audible se comprueba en el dispositivo real.
+La voz predeterminada es **Catalina Neural, español de Chile**, una voz sintética neuronal de Microsoft. Los audios de los textos de la app se preparan antes de publicar y se sirven desde este mismo sitio; jugar no envía los mensajes del niño a un servicio de generación. Solo se descarga el audio solicitado. La velocidad se puede cambiar sin alterar el tono.
+
+En Ajustes puedes probar Catalina o elegir una voz del dispositivo. Si falta un audio o falla su descarga, se usa la voz del navegador como respaldo. Las preferencias antiguas se actualizan una vez a Catalina; después se respeta la voz elegida. La calidad y disponibilidad del respaldo dependen del dispositivo.
 
 ## Uso local
 
@@ -57,3 +59,19 @@ El flujo `.github/workflows/pages.yml`, **Publicar Max estudia en GitHub Pages**
 `node test.cjs` comprueba bancos de los cuatro niveles, opciones, respuestas, clasificación, secuencias y geometría del puzle.
 
 `node test-ui.cjs`, con la vista previa abierta, comprueba entrada, saludo, juegos, oraciones duplicadas, fanfarria Web Audio, voces simuladas, cancelación y diseño adaptable. Usa Playwright del runtime local; `PLAYWRIGHT_PATH` permite indicar otra instalación. `TEST_LEVELS=4` limita las rondas al cuarto nivel; `TEST_URL` cambia el servidor. La prueba de voz verifica la programación, no su calidad audible.
+
+`node test-voice.cjs` verifica los archivos de voz, la cobertura de los textos de los cuatro niveles, reproducción real de MP3, velocidad, cancelación y respaldo cuando falla una descarga.
+
+## Preparar nuevos audios
+
+Los audios publicados se generaron con `es-CL-CatalinaNeural`, velocidad `-5%`, tras autorización del responsable de la app para enviar los textos públicos (incluido «Hola Max») a Microsoft y publicar los resultados. No se enviaron grabaciones, respuestas ni estadísticas del niño. Referencias: [voz de Microsoft](https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support) y [herramienta edge-tts](https://github.com/rany2/edge-tts).
+
+La generación es una tarea de mantenimiento; no se ejecuta en los dispositivos de quienes juegan ni en cada despliegue. Requiere Python con `edge-tts==7.2.8`, Node y conexión al servicio. El sitio publicado reproduce archivos y no requiere claves API ni suscripciones de sus visitantes.
+
+```sh
+node tools/voice-catalog.cjs voice-catalog.json
+python tools/generate-voice.py voice-catalog.json
+node test-voice.cjs
+```
+
+El generador reutiliza los archivos existentes, permite reanudar y escribe `dist/voice.js` solo cuando completa el catálogo. Los textos nuevos deben añadirse al catálogo y regenerarse antes de publicar. La prueba de cobertura detecta instrucciones y ayudas sin grabación. El acceso al servicio de generación depende de Microsoft y puede cambiar; los audios ya publicados se siguen reproduciendo desde Pages.

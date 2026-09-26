@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict');
-const {readFileSync,existsSync}=require('node:fs');
+const {readFileSync,existsSync,statSync}=require('node:fs');
 const {words,activities,intruders,questions,sequences,shuffle,choices,classifyRound,levels,questionBank,intruderBank,longSequences,advancedSequences,puzzleGrid,chooseVoice,sentenceBank,completionBank,storyBank,reasoningBank}=require('./dist/data.js');
 assert.equal(new Set(activities.map(a=>a.id)).size,12);
 for(const count of [2,3,4]) {
@@ -69,4 +69,10 @@ assert.equal(chooseVoice([{name:'Chile',lang:'es_CL',voiceURI:'cl'}]).voiceURI,'
 const html=readFileSync('./dist/index.html','utf8');
 for(const path of ['app.js','data.js','style.css','assets/parque.png'])assert(existsSync('./dist/'+path));
 assert(html.includes('lang="es-CL"'));
+const catalog=require('./tools/voice-catalog.cjs'),recorded=require('./dist/voice.js');
+for(const item of catalog){assert.equal(recorded.files[item.key],item.file);assert(statSync('./dist/assets/voice/'+item.file).size>1000);}
+assert.equal(new Set(Object.values(recorded.files)).size,catalog.length);
+const {voiceKey}=require('./dist/data.js');
+assert.equal(voiceKey('¡Hola, Max!'),voiceKey('Hola Max'));assert.notEqual(voiceKey('sí'),voiceKey('si'));
 console.log('OK: categorías, respuestas, opciones, secuencias, puzles y recursos.');
+console.log('OK: catálogo de voz completo y archivos de audio.');

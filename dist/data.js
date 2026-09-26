@@ -271,6 +271,7 @@ const LEARNING = (() => {
     const score=v=>(/natural|neural|premium|enhanced/i.test(v.name)?20:0)+(/^es[-_]CL$/i.test(v.lang)?8:/^es[-_](MX|AR|US)$/i.test(v.lang)?5:0)+(v.default?1:0);
     return spanish.find(v=>v.voiceURI===uri)||spanish.sort((a,b)=>score(b)-score(a))[0];
   }
+  function voiceKey(text){return String(text).normalize('NFKC').toLocaleLowerCase('es').replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim();}
   function shuffle(items, random=Math.random) {
     const result=[...items];
     for(let i=result.length-1;i>0;i--) { const j=Math.floor(random()*(i+1)); [result[i],result[j]]=[result[j],result[i]]; }
@@ -287,6 +288,6 @@ const LEARNING = (() => {
     });
     return {cats,ids:shuffle(ids)};
   }
-  return {words,categories,activities,intruders,questions,sequences,shuffle,choices,classifyRound,levels,questionBank,intruderBank,longSequences,advancedSequences,puzzleGrid,chooseVoice,sentenceBank,completionBank,storyBank,reasoningBank};
+  return {words,categories,activities,intruders,questions,sequences,shuffle,choices,classifyRound,levels,questionBank,intruderBank,longSequences,advancedSequences,puzzleGrid,chooseVoice,voiceKey,sentenceBank,completionBank,storyBank,reasoningBank};
 })();
 if (typeof module !== 'undefined') module.exports=LEARNING;
