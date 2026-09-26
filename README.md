@@ -37,8 +37,6 @@ Las imágenes del vocabulario son emojis con etiquetas; no son un sistema de pic
 
 El niño puede señalar, mirar, hacer gestos o hablar. No se exige repetir, mirar a los ojos o acertar para recibir ayuda. La sección «En familia» ofrece modelos para usar fuera de la pantalla.
 
-## Verificar
-
 ## GitHub Pages
 
 El repositorio privado es `LeGreenSide/Estudio`. El flujo `.github/workflows/pages.yml` publica únicamente la carpeta `dist`, después de verificar el contenido y el JavaScript. No publica los archivos de pruebas, la configuración local de Sites ni el PDF de la guía.
