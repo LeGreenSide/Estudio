@@ -90,7 +90,8 @@ function voiceOptions(selected){
  const voices='speechSynthesis' in window?speechSynthesis.getVoices().filter(v=>/^es(?:[-_]|$)/i.test(v.lang)):[];
  return `<option value="recorded:catalina" ${selected==='recorded:catalina'?'selected':''}>Catalina · voz natural de Chile</option><option value="" ${selected===''?'selected':''}>Automática · voz del dispositivo</option>${voices.map(v=>`<option value="${escapeHTML(v.voiceURI)}" ${v.voiceURI===selected?'selected':''}>${escapeHTML(v.name)} · ${escapeHTML(v.lang)}${v.localService?'':' · en línea'}</option>`).join('')}${selected&&selected!=='recorded:catalina'&&!voices.some(v=>v.voiceURI===selected)?`<option value="${escapeHTML(selected)}" selected>Voz guardada no disponible · se usará automática</option>`:''}`;
 }
-if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.addEventListener('voiceschanged',()=>{const select=document.getElementById('voice-select');if(select)select.innerHTML=voiceOptions(select.value);});}
+// Safari 15 has speech synthesis without EventTarget; voice updates are optional.
+if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.addEventListener?.('voiceschanged',()=>{const select=document.getElementById('voice-select');if(select)select.innerHTML=voiceOptions(select.value);});}
 function levelPicker(id){return `<label class="level-picker" for="${id}">Nivel<select id="${id}" data-level>${Object.entries(levels).map(([n,l])=>`<option value="${n}" ${settings.level===Number(n)?'selected':''}>${n} · ${l.name}</option>`).join('')}</select></label>`;}
 function applySettings(){
  document.body.classList.toggle('calm',settings.calm);

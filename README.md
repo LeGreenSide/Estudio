@@ -64,6 +64,8 @@ El flujo `.github/workflows/pages.yml`, **Publicar Max estudia en GitHub Pages**
 
 `node test-mobile-audio.cjs` completa oraciones con controles táctiles y comprueba la fanfarria sin Web Audio, el reproductor compartido, los tres volúmenes y el silencio. `TEST_BROWSER=webkit` usa el motor de Safari; por defecto usa Chromium. Requiere el navegador correspondiente instalado en Playwright; no sustituye una prueba en un iPhone físico.
 
+`LEGACY_SPEECH=1` simula la interfaz de voz de Safari 15, sin `addEventListener`, en una pantalla de 375 × 667. Comprueba que Iniciar funciona con sonido y sin él, los juegos y las voces disponibles. La notificación de nuevas voces es opcional: su ausencia no debe impedir cargar la aplicación.
+
 `node test-voice.cjs` verifica los archivos de voz, la cobertura de los textos de los cuatro niveles, reproducción real de MP3, velocidad, cancelación y respaldo cuando falla una descarga.
 
 ## Preparar nuevos audios
