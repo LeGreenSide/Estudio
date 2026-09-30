@@ -119,6 +119,7 @@ function pause(){openDialog(`<div class="pause-dialog"><div class="pause-symbol"
 function activityCards(list){return `<div class="activity-grid">${list.map(a=>`<a class="activity-card" href="#${a.id}"><div class="card-art ${a.color}"><span aria-hidden="true">${a.icon}</span></div><div class="tag">${a.tag}</div><h3>${a.title}</h3><p>${a.subtitle}</p><div class="card-footer"><span>${a.type}</span><span class="card-arrow" aria-hidden="true">↗</span></div></a>`).join('')}</div>`;}
 function home(){
  main.innerHTML=`<div class="page-heading"><div><div class="eyebrow">MAX ESTUDIA · A TU RITMO</div><h1>Hola Max, ¿a qué jugamos?</h1><p>Un espacio para descubrir, pensar y contar tus ideas.</p></div><span class="pace-label">◷ Sin prisa, sin cronómetro</span></div><section class="welcome-strip"><span class="strip-icon" aria-hidden="true">🌱</span><div class="welcome-copy"><h2>Una oración para empezar</h2><p>${settings.level===1?'Quién hace qué: juntamos palabras sencillas.':settings.level===2?'Contamos qué pasa, dónde y con qué.':settings.level===3?'Unimos ideas con «porque», «antes» y «después».':'Conectamos ideas con «si», «aunque» y «mientras».'}</p></div><a class="primary" href="#ordenar">Armar una oración <span aria-hidden="true">→</span></a></section><div class="section-heading"><h2>Mis actividades</h2>${levelPicker('home-level')}</div><p class="catalog-note">12 juegos · 48 oraciones · 32 frases · 12 cuentos · 4 niveles</p>${activityCards(['ordenar','completar','frases','historias','preguntas','clasificar','intruso','puzle','secuencia'].map(id=>activities.find(a=>a.id===id)))}<section class="reasoning-section" aria-labelledby="reasoning-heading"><div class="section-heading"><div><div class="eyebrow">PENSAR PASO A PASO</div><h2 id="reasoning-heading">Mi rincón de razonamiento</h2></div><a class="secondary" href="#razonar">Explorar</a></div><p class="catalog-note">72 retos para descubrir patrones, unir pistas y buscar soluciones.</p>${activityCards(activities.filter(a=>a.section==='razonar'))}</section><p class="home-note"><span aria-hidden="true">♡</span><span><strong>Cada intento cuenta.</strong> Puedes tocar, escuchar o jugar acompañado.</span></p>`;
+ main.insertAdjacentHTML('afterbegin',`<section class="study-banner"><span aria-hidden="true">🎒</span><div><div class="eyebrow">PREPARAMOS LAS PRUEBAS</div><h2>Un poquito cada día</h2><p>Lenguaje, números hasta el 599 y geometría. Juegos para el temario de octubre.</p></div><a class="primary" href="#estudio">Estudio para mis pruebas →</a></section>`);
 }
 function reasoningHome(){
  main.innerHTML=`<a class="back" href="#inicio">← Mis actividades</a><div class="page-heading"><div><div class="eyebrow">MI RINCÓN DE RAZONAMIENTO</div><h1>Observo, pienso y descubro</h1><p>Una pista a la vez. Puedes escuchar y pedir ayuda.</p></div>${levelPicker('reasoning-level')}</div><section class="welcome-strip"><span class="strip-icon" aria-hidden="true">💡</span><div class="welcome-copy"><h2>Hay tiempo para pensar</h2><p>Mira las pistas, prueba una respuesta y descubre por qué encaja.</p></div></section>${activityCards(activities.filter(a=>a.section==='razonar'))}<p class="home-note">6 retos por juego y nivel · 72 en total · Sin tiempo límite</p>`;
@@ -128,6 +129,7 @@ function setupRound(){
  hideVictory();
  stopSpeech();
  state={placed:{},selected:null,done:false,helped:false};
+ if(STUDY.active()){STUDY.setup();return;}
  if(route==='clasificar'){Object.assign(state,classifyRound(round,settings.choices,settings.level));}
  if(route==='intruso'){const bank=intruderBank(settings.level);state.question=bank[round%bank.length];state.ids=choices(state.question.ids,state.question.answer,Math.max(3,settings.choices));}
  if(route==='preguntas'){
@@ -164,6 +166,8 @@ function instruction(text,detail='Puedes arrastrar o tocar la imagen y después 
 function controls(){return `<div id="feedback" class="game-feedback ${state.done?'success':''}" role="status" aria-live="polite">${state.feedback||'Puedes tomarte todo el tiempo que necesites.'}</div><div class="game-actions"><div><button class="secondary" data-action="hint">Ver una ayuda</button><button class="quiet-btn" data-action="reset">Volver a empezar</button>${['ordenar','completar','historias'].includes(route)?`<button class="quiet-btn" data-action="skip">${route==='historias'?'Otro cuento':'Otra frase'}</button>`:''}</div>${state.done?`<button class="primary" data-action="next">${route==='puzle'?'Armar otra vez':route==='frases'?'Otro mensaje':'Seguir'} <span aria-hidden="true">→</span></button>`:''}</div>`;}
 function textAnswers(){return `<div class="tiles">${state.ids.map(id=>`<div class="answer-option"><button class="tile text-tile" data-answer="${escapeHTML(id)}">${escapeHTML(id)}</button><button class="quiet-btn" data-speak="${escapeHTML(id)}" aria-label="Escuchar: ${escapeHTML(id)}">♪ Escuchar</button></div>`).join('')}</div>`;}
 function renderGame(){
+ if(route==='estudio'){STUDY.home();return;}
+ if(STUDY.active()){STUDY.render();return;}
  hideVictory();
  stopSpeech();
  let body='';
@@ -201,6 +205,7 @@ function renderGame(){
  if(state.done&&answerGames.includes(route))main.querySelectorAll('[data-answer]').forEach(b=>b.disabled=true);
 }
 function select(id){
+ if(STUDY.active()){STUDY.select(id);return;}
  if(!state.ids?.includes(id)&&route!=='frases')return;
  if(route==='frases'){place(id,'message');return;}
  state.selected=state.selected===id?null:id;
@@ -214,6 +219,7 @@ function afterRenderFocus(){
  const next=main.querySelector(state.done?'[data-action="next"]':'[data-piece], [data-answer]');next?.focus({preventScroll:true});
 }
 function place(id,target){
+ if(STUDY.active()){STUDY.place(id,target);return;}
  if(route==='frases'){
   if(target!=='message'||!messageWords.includes(id))return;
   state.message=[id];state.done=false;state.feedback='Tu mensaje está listo. Puedes mostrarlo o cambiarlo.';renderGame();main.querySelector('[data-action="say-sentence"]').focus({preventScroll:true});return;
@@ -228,6 +234,7 @@ function place(id,target){
  renderGame();announce(state.feedback);if(state.done)celebrate(state.feedback);else speak(state.feedback);afterRenderFocus();
 }
 function answer(id){
+ if(STUDY.active()){STUDY.answer(id);return;}
  if(state.done||!state.ids.includes(id))return;
  const q=state.question;
  if(id!==q.answer&&!q.preference){feedback('Miremos otra vez. Puedes probar otra imagen o ver una ayuda.');return;}
@@ -235,6 +242,7 @@ function answer(id){
  renderGame();announce(state.feedback);celebrate(state.feedback);afterRenderFocus();
 }
 function hint(){
+ if(STUDY.active()){STUDY.hint();return;}
  if(state.done){feedback(state.feedback,true);speak(state.feedback);return;}
  state.helped=true;
  if(route==='frases'){feedback('Un ejemplo: «Quiero agua». Tú puedes elegir otro mensaje.');speak('Un ejemplo: quiero agua.');return;}
@@ -255,16 +263,18 @@ function hint(){
 function navigate(){
  if(!started)return;
  stopSpeech();route=location.hash.slice(1)||'inicio';
- if(!['inicio','familia','razonar',...activities.map(a=>a.id)].includes(route))route='inicio';
+ if(!['inicio','familia','razonar','estudio',...activities.map(a=>a.id),...STUDY.games.map(a=>a.id)].includes(route))route='inicio';
  round=0;setupRound();
- document.querySelectorAll('[data-nav]').forEach(a=>{const active=a.dataset.nav===route||(a.dataset.nav==='inicio'&&activities.some(x=>x.id===route&&!x.section))||(a.dataset.nav==='razonar'&&reasoningGames.includes(route));a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+ document.querySelectorAll('[data-nav]').forEach(a=>{const active=a.dataset.nav===route||(a.dataset.nav==='inicio'&&activities.some(x=>x.id===route&&!x.section))||(a.dataset.nav==='razonar'&&reasoningGames.includes(route));const studyActive=a.dataset.nav==='estudio'&&!!STUDY.active();a.classList.toggle('active',active||studyActive);if(active||studyActive)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
  if(route==='inicio')home();else if(route==='familia')family();else if(route==='razonar')reasoningHome();else renderGame();
- document.title=`${activities.find(a=>a.id===route)?.title||({inicio:'Jugar y aprender',familia:'En familia',razonar:'Razonamiento'}[route])} · Max estudia`;
+ document.title=`${STUDY.active()?.title||activities.find(a=>a.id===route)?.title||({estudio:'Estudio para mis pruebas',inicio:'Jugar y aprender',familia:'En familia',razonar:'Razonamiento'}[route])} · Max estudia`;
  main.focus({preventScroll:true});window.scrollTo(0,0);
 }
 document.addEventListener('click',event=>{
  if(ignoreClick){event.preventDefault();ignoreClick=false;return;}
  const b=event.target.closest('button');if(!b||b.disabled)return;
+ if(b.dataset.studySection){document.getElementById('study-'+b.dataset.studySection)?.scrollIntoView();return;}
+ if(STUDY.active()&&(b.dataset.study||b.dataset.bead!==undefined)){STUDY.click(b);return;}
  if(b.dataset.speak){if(!settings.sound){announce('El sonido está apagado. Puedes encenderlo con el botón Sonido.');return;}speak(b.dataset.speak);return;}
  if(b.dataset.piece!==undefined){select(b.dataset.piece);return;}
  if(b.dataset.target!==undefined){if(state.selected!==null)place(state.selected,b.dataset.target);else feedback('Primero elige una imagen.');return;}
@@ -301,6 +311,8 @@ document.addEventListener('change',event=>{
   if(route==='inicio')home();else if(route==='razonar')reasoningHome();else renderGame();main.querySelector('[data-level]').focus({preventScroll:true});announce('Nivel '+levels[number].name);
  }
 });
+
+document.addEventListener('submit',event=>{if(event.target.id==='study-answer-form'){event.preventDefault();STUDY.check(document.getElementById('study-answer').value);}});
 dialog.addEventListener('close',stopSpeech);
 dialog.addEventListener('submit',event=>{
  if(event.target.id!=='settings-form')return;

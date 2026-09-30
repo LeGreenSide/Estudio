@@ -53,6 +53,14 @@ const {chromium}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.cache/co
      else for(const id of [...state.ids]){select(id);hint();place(id,route==='clasificar'?words[id][2]:id);}
     }
    }
+   for(const game of STUDY.games)for(const level of [1,2,3,4])for(let i=0;i<STUDY.total;i++){
+    route=game.id;round=i;settings.level=level;setupRound();renderGame();speak(state.instruction);hint();
+    main.querySelectorAll('[data-speak]').forEach(b=>speak(b.dataset.speak));
+    const q=state.q;
+    if(q.type==='order')for(const id of [...state.ids]){select(id);place(id,id);}
+    else if(q.type==='choice')answer(q.answer);
+    else if(q.type==='input')STUDY.check(q.answer);
+   }
    return [...absent];
   });
   assert.deepEqual(missing,[]);console.log('OK: cobertura de instrucciones, palabras, pistas y respuestas de los cuatro niveles');

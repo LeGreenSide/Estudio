@@ -23,8 +23,10 @@ jobs:
       - name: Comprobar contenido y JavaScript
         run: |
           node test.cjs
+          node test-study.cjs
           node --check dist/app.js
           node --check dist/data.js
+          node --check dist/study.js
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -47,6 +47,13 @@ for(const prefix of ['Quiero','No quiero','Necesito'])for(const id of messageWor
  const label={manzana:'una manzana',pelota:'una pelota'}[id]||L.words[id][1].toLowerCase();
  for(const when of ['', 'ahora','después'])for(const where of ['','en casa','en el parque'])add([prefix,label,when,where].filter(Boolean).join(' '));
 }
+const study=require('../dist/study.js');
+['Ahora toca el espacio donde va.','¡Terminaste tu práctica! Cada intento cuenta.',...Object.values(study.signNames)].forEach(add);
+for(const game of study.games)for(const level of [1,2,3,4])for(let i=0;i<study.total;i++){
+ const q=study.exercise(game.key,level,i);
+ add(q.prompt+(q.clue?' '+q.clue:''));add(q.help);
+ (q.tokens||q.options||[]).forEach(text=>add(study.signNames[text]||text));
+}
 const catalog=[...texts.values()];
 if(require.main===module){writeFileSync(process.argv[2]||'voice-catalog.json',JSON.stringify(catalog,null,2));console.log(`${catalog.length} textos; ${catalog.reduce((n,x)=>n+x.text.length,0)} caracteres.`);}
 module.exports=catalog;

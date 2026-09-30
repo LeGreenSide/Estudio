@@ -10,7 +10,7 @@ if any(not re.fullmatch(r'[a-f0-9]{20}\.mp3',item['file']) for item in catalog):
     raise ValueError('Invalid audio filename')
 output=root/'dist/assets/voice'
 output.mkdir(parents=True,exist_ok=True)
-limit=asyncio.Semaphore(3)
+limit=asyncio.Semaphore(8)
 completed=0
 
 async def generate(item):

@@ -4,6 +4,18 @@ Juegos en español para explorar el lenguaje, construir oraciones y practicar ra
 
 ## Actividades
 
+### Estudio para mis pruebas
+
+Nueva sección basada en el temario escolar facilitado por la familia, con 22 juegos y acceso desde el inicio o **Mis pruebas**:
+
+- **Lenguaje · 5 de octubre:** abecedario español con Ñ, orden alfabético, sustantivos propios y comunes, adjetivos, verbos, tiempos verbales, ordenar y escribir oraciones, y práctica manual del nombre.
+- **Números · 7 de octubre:** antecesor/sucesor, comparación, orden ascendente y descendente, ábaco manipulable, cifras y palabras, composición/descomposición, patrones y dobles. Los cuatro niveles trabajan hasta 99, 299, 499 y 599.
+- **Geometría · 9 de octubre:** nombres de figuras 2D, lados rectos, vértices y ángulo recto, con dibujos SVG.
+
+Los retos cerrados tienen ayudas, corrección y fanfarria. Las oraciones libres se revisan con una lista junto a un adulto; no se califica automáticamente su significado. El nombre completo se introduce solo en la pantalla de práctica y puede trazarse con dedo o lápiz digital, o copiarse en papel usando el modelo de letra del curso. El nombre, los trazos y la escritura libre no se guardan ni se envían a la voz. No se publica la fotografía del temario.
+
+### Juegos de comunicación
+
 - **Armo una oración:** 48 oraciones, 12 por nivel; arrastre, toque o teclado. Las palabras idénticas son intercambiables.
 - **La palabra que falta:** 32 frases con contexto y opciones que se pueden escuchar.
 - **Pequeños cuentos:** 12 cuentos y 36 preguntas. El relato permanece visible.
@@ -57,6 +69,8 @@ Web: [Max estudia](https://legreenside.github.io/Estudio/).
 El flujo `.github/workflows/pages.yml`, **Publicar Max estudia en GitHub Pages**, verifica el contenido y publica únicamente `dist`. Para actualizar la web después de subir cambios, ejecuta ese flujo manualmente desde Actions. Pages usa GitHub Actions como origen. Los archivos de pruebas y la configuración local no forman parte del sitio.
 
 ## Verificación
+
+`node test-study.cjs` valida los 22 juegos, cuatro niveles, orden alfabético, opciones y cálculos. `node test-study-ui.cjs` comprueba las respuestas, el ábaco, la escritura y el dibujo; recorre todos los retos en pantalla de 375 × 667, simulando la API de voz de Safari 15. Admite `TEST_BROWSER=webkit` y `TEST_URL` como la prueba móvil de audio.
 
 `node test.cjs` comprueba bancos de los cuatro niveles, opciones, respuestas, clasificación, secuencias y geometría del puzle.
 
