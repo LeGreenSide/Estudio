@@ -98,7 +98,7 @@ const {words,sentenceBank,completionBank,questionBank,intruderBank,storyBank,rea
   await page.evaluate(()=>{fakeVoices.push({name:'Nueva',lang:'es-ES',voiceURI:'new',localService:true});speechSynthesis.dispatchEvent(new Event('voiceschanged'));});
   assert.equal(await page.locator('#voice-select').inputValue(),'cl');assert.equal(await page.locator('#voice-select option[value="new"]').count(),1);
   await page.locator('[name="victory"]').uncheck();await page.getByRole('button',{name:'Guardar ajustes'}).click();
-  await go('completar');await answer(completionBank(3)[0].answer);assert(await page.evaluate(()=>!narrationAudio||narrationAudio.paused));assert.equal(await page.evaluate(()=>speechLog.at(-1).voice),'cl');
+  await go('completar');await answer(completionBank(3)[0].answer);await page.waitForFunction(()=>narrationAudio.paused&&speechLog.at(-1)?.voice==='cl');
   // Enabling celebrations again, then pausing, must cancel pending speech.
   await page.locator('[data-action="settings"]').first().click();await page.locator('[name="victory"]').check();await page.getByRole('button',{name:'Guardar ajustes'}).click();
   await page.evaluate(()=>speechLog.length=0);await answer(completionBank(3)[0].answer);await page.locator('[data-action="pause"]').first().click();

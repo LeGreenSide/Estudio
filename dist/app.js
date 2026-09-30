@@ -32,10 +32,13 @@ function playAudio(files,{rate=1,volume=1},onEnded,onError){
  };
  const play=()=>{
   if(epoch!==audioEpoch)return;
+  const clip=index;
+  // Safari can reject the previous play promise after advancing to the next clip.
+  const clipError=()=>{if(index===clip)fallback();};
   narrationAudio.src=files[index];narrationAudio.volume=volume;
   narrationAudio.playbackRate=rate;narrationAudio.preservesPitch=true;
   narrationAudio.onended=()=>{if(epoch!==audioEpoch)return;if(++index<files.length)play();else onEnded?.();};
-  narrationAudio.onerror=fallback;narrationAudio.play().catch(fallback);
+  narrationAudio.onerror=clipError;narrationAudio.play().catch(clipError);
  };
  play();
 }
@@ -74,9 +77,10 @@ function playEffect(kind,text=''){
  const next=()=>{if(text)speak(text);};
  if(settings.effects===false||settings.calm){next();return;}
  stopSpeech();
- playAudio(['assets/ui-'+kind+'.wav'],{},next,next);
+ playAudio((Array.isArray(kind)?kind:[kind]).map(name=>'assets/ui-'+name+'.wav'),{},next,next);
 }
-function celebrate(text,options=settings){
+function retryFeedback(text,option=false){feedback(text);playEffect(option?['option','retry']:'retry');}
+function celebrate(text,options=settings,effects=['correct']){
  stopSpeech();
  if(text){
   const praise=praiseWords[victoryCount++%praiseWords.length];
@@ -85,11 +89,13 @@ function celebrate(text,options=settings){
   victoryPopup.hidden=false;text=praise+' '+text;announce(text);
  }
  if(!options.sound)return;
- if(!options.victory){if(text)speak(text,options);return;}
  const next=()=>{if(text)speak(text,options);};
  const volume=[.25,.65,1].includes(options.victoryVolume)?options.victoryVolume:.65;
- playAudio(['assets/fanfare-'+Math.round(volume*100)+'.wav'],{},next,()=>{
-  audioNotice('No se pudo cargar la fanfarria. Puedes seguir jugando.');next();
+ const files=text&&options.effects!==false&&!options.calm?effects.map(name=>'assets/ui-'+name+'.wav'):[];
+ if(options.victory)files.push('assets/fanfare-'+Math.round(volume*100)+'.wav');
+ if(!files.length){next();return;}
+ playAudio(files,{},next,()=>{
+  audioNotice('No se pudo cargar un sonido. Puedes seguir jugando.');next();
  });
 }
 
@@ -120,8 +126,8 @@ function showSettings(){
  <label class="check-line"><input name="victory" type="checkbox" ${settings.victory?'checked':''}> Fanfarria al completar una actividad</label>
  <label for="victory-volume">Volumen de la fanfarria</label><select id="victory-volume" name="victoryVolume">${[[.25,'Suave'],[.65,'Medio'],[1,'Alto']].map(([n,l])=>`<option value="${n}" ${settings.victoryVolume===n?'selected':''}>${l}</option>`).join('')}</select>
  <button type="button" class="secondary audio-preview" data-action="preview-victory">Probar fanfarria</button>
- <label class="check-line"><input name="effects" type="checkbox" ${settings.effects!==false?'checked':''}> Sonidos al tocar, colocar piezas y avanzar</label>
- <label class="check-line"><input name="calm" type="checkbox" ${settings.calm?'checked':''}> Modo tranquilo: colores suaves, sin animaciones ni sonidos de toque</label><div class="dialog-actions"><button type="button" class="secondary" data-action="close">Cancelar</button><button class="primary" type="submit">Guardar ajustes</button></div></form>`);
+ <label class="check-line"><input name="effects" type="checkbox" ${settings.effects!==false?'checked':''}> Sonidos al elegir, acertar, reintentar y jugar</label>
+ <label class="check-line"><input name="calm" type="checkbox" ${settings.calm?'checked':''}> Modo tranquilo: colores suaves, sin animaciones ni efectos de juego</label><div class="dialog-actions"><button type="button" class="secondary" data-action="close">Cancelar</button><button class="primary" type="submit">Guardar ajustes</button></div></form>`);
 }
 function pause(){openDialog(`<div class="pause-dialog"><div class="pause-symbol" aria-hidden="true">🌿</div><h2 id="dialog-title">Podemos descansar</h2><p>No hay apuro.<br>Tu actividad te espera aquí.</p><div class="dialog-actions"><button class="secondary" data-action="home">Ir al inicio</button><button class="primary" data-action="close">Quiero seguir</button></div></div>`);}
 function activityCards(list){return `<div class="activity-grid">${list.map(a=>`<a class="activity-card" href="#${a.id}"><div class="card-art ${a.color}"><span aria-hidden="true">${a.icon}</span></div><div class="tag">${a.tag}</div><h3>${a.title}</h3><p>${a.subtitle}</p><div class="card-footer"><span>${a.type}</span><span class="card-arrow" aria-hidden="true">↗</span></div></a>`).join('')}</div>`;}
@@ -230,11 +236,11 @@ function place(id,target){
  if(STUDY.active()){STUDY.place(id,target);return;}
  if(route==='frases'){
   if(target!=='message'||!messageWords.includes(id))return;
-  state.message=[id];state.done=false;state.feedback='Tu mensaje está listo. Puedes mostrarlo o cambiarlo.';renderGame();main.querySelector('[data-action="say-sentence"]').focus({preventScroll:true});return;
+  state.message=[id];state.done=false;state.feedback='Tu mensaje está listo. Puedes mostrarlo o cambiarlo.';renderGame();main.querySelector('[data-action="say-sentence"]').focus({preventScroll:true});playEffect('option');return;
  }
  if(!state.ids?.includes(id)||state.placed[id]!==undefined||state.done)return;
  const correct=route==='clasificar'?words[id][2]===target:route==='ordenar'?state.sentence.tokens[id]===state.sentence.tokens[target]:id===target;
- if(!correct){feedback(route==='clasificar'?'Probemos otro grupo. Puedes pedir una ayuda.':'Esta imagen va en otro lugar. Podemos probar de nuevo.');return;}
+ if(!correct){retryFeedback(route==='clasificar'?'Probemos otro grupo. Puedes pedir una ayuda.':'Esta imagen va en otro lugar. Podemos probar de nuevo.');return;}
  if(route!=='clasificar'&&Object.values(state.placed).includes(target))return;
  state.placed[id]=target;state.selected=null;
  state.done=Object.keys(state.placed).length===state.ids.length;
@@ -245,16 +251,16 @@ function answer(id){
  if(STUDY.active()){STUDY.answer(id);return;}
  if(state.done||!state.ids.includes(id))return;
  const q=state.question;
- if(id!==q.answer&&!q.preference){feedback('Miremos otra vez. Puedes probar otra imagen o ver una ayuda.');return;}
+ if(id!==q.answer&&!q.preference){retryFeedback('Miremos otra vez. Puedes probar otra imagen o ver una ayuda.',true);return;}
  state.done=true;state.feedback=q.preference?`Elegiste ${words[id][1].toLowerCase()}. Tu elección cuenta.`:q.model||q.why;
- renderGame();announce(state.feedback);celebrate(state.feedback);afterRenderFocus();
+ renderGame();announce(state.feedback);celebrate(state.feedback,settings,q.preference?['option']:['option','correct']);afterRenderFocus();
 }
 function hint(){
  if(STUDY.active()){STUDY.hint();return;}
- if(state.done){feedback(state.feedback,true);speak(state.feedback);return;}
+ if(state.done){feedback(state.feedback,true);playEffect('hint',state.feedback);return;}
  state.helped=true;
- if(route==='frases'){feedback('Un ejemplo: «Quiero agua». Tú puedes elegir otro mensaje.');speak('Un ejemplo: quiero agua.');return;}
- if(route==='preguntas'&&state.question.preference){feedback(state.question.model);speak(state.question.model);return;}
+ if(route==='frases'){feedback('Un ejemplo: «Quiero agua». Tú puedes elegir otro mensaje.');playEffect('hint','Un ejemplo: quiero agua.');return;}
+ if(route==='preguntas'&&state.question.preference){feedback(state.question.model);playEffect('hint',state.question.model);return;}
  let text='',button;
  if(answerGames.includes(route)){
   const q=state.question;text=q.model||q.why;button=Array.from(main.querySelectorAll('[data-answer]')).find(b=>b.dataset.answer===q.answer);
@@ -266,7 +272,7 @@ function hint(){
   button=Array.from(main.querySelectorAll('[data-target]')).find(b=>b.dataset.target===target);
   text=route==='clasificar'?`${words[id][1]} va con ${categories[target][1].toLowerCase()}. Toca ese grupo.`:route==='secuencia'?`${state.steps[id][1]} va en el paso ${Number(id)+1}.`:route==='ordenar'?`${state.sentence.text}. «${state.sentence.tokens[id]}» va en el espacio ${Number(target)+1}.`:'He elegido una pieza. Toca el espacio resaltado.';
  }
- button?.classList.add('hint');button?.focus({preventScroll:true});feedback(text);speak(text);
+ button?.classList.add('hint');button?.focus({preventScroll:true});feedback(text);playEffect('hint',text);
 }
 function navigate(){
  if(!started)return;
@@ -287,8 +293,8 @@ document.addEventListener('click',event=>{
  if(b.dataset.piece!==undefined){select(b.dataset.piece);return;}
  if(b.dataset.target!==undefined){if(state.selected!==null)place(state.selected,b.dataset.target);else feedback('Primero elige una imagen.');return;}
  if(b.dataset.answer!==undefined){answer(b.dataset.answer);return;}
- if(b.dataset.detail){const key=b.dataset.detail.startsWith('en ')?'place':'detail';state[key]=state[key]===b.dataset.detail?'':b.dataset.detail;state.done=false;state.feedback='Puedes completar tu mensaje.';renderGame();main.querySelector(`[data-detail="${b.dataset.detail}"]`).focus({preventScroll:true});return;}
- if(b.dataset.prefix){state.prefix=b.dataset.prefix;state.done=false;state.feedback='Puedes mostrar tu mensaje o cambiarlo.';renderGame();main.querySelector(`[data-prefix="${state.prefix}"]`).focus({preventScroll:true});return;}
+ if(b.dataset.detail){const key=b.dataset.detail.startsWith('en ')?'place':'detail';state[key]=state[key]===b.dataset.detail?'':b.dataset.detail;state.done=false;state.feedback='Puedes completar tu mensaje.';renderGame();main.querySelector(`[data-detail="${b.dataset.detail}"]`).focus({preventScroll:true});playEffect('option');return;}
+ if(b.dataset.prefix){state.prefix=b.dataset.prefix;state.done=false;state.feedback='Puedes mostrar tu mensaje o cambiarlo.';renderGame();main.querySelector(`[data-prefix="${state.prefix}"]`).focus({preventScroll:true});playEffect('option');return;}
  switch(b.dataset.action){
   case 'start':if(!started){started=true;settings.sound=document.getElementById('start-sound').checked;document.getElementById('entry').hidden=true;document.getElementById('app-shell').hidden=false;applySettings();navigate();if(settings.sound)speak('Hola Max');}break;
   case 'settings':showSettings();break;
@@ -300,12 +306,12 @@ document.addEventListener('click',event=>{
   case 'home':dialog.close();location.hash='inicio';break;
   case 'listen':if(!settings.sound){feedback('El sonido está apagado. Puedes encenderlo arriba.');}else speak(state.instruction);break;
   case 'hint':hint();break;
-  case 'reset':setupRound();renderGame();afterRenderFocus();break;
-  case 'skip':round+=route==='historias'?3-round%3:1;setupRound();renderGame();main.focus();window.scrollTo(0,0);break;
+  case 'reset':setupRound();renderGame();afterRenderFocus();playEffect('clear');break;
+  case 'skip':round+=route==='historias'?3-round%3:1;setupRound();renderGame();main.focus();window.scrollTo(0,0);playEffect('next');break;
   case 'victory-close':hideVictory();stopSpeech();afterRenderFocus();break;
   case 'victory-next':
   case 'next':round++;setupRound();renderGame();main.focus();window.scrollTo(0,0);playEffect('next');break;
-  case 'clear-message':state.message=[];state.detail='';state.place='';state.done=false;state.feedback='Puedes elegir otra imagen.';renderGame();afterRenderFocus();break;
+  case 'clear-message':state.message=[];state.detail='';state.place='';state.done=false;state.feedback='Puedes elegir otra imagen.';renderGame();afterRenderFocus();playEffect('clear');break;
   case 'say-sentence':{const wasDone=state.done;const message=state.prefix+' '+state.message.map(phraseWord).join(' ')+([state.detail,state.place].filter(Boolean).length?' '+[state.detail,state.place].filter(Boolean).join(' '):'');state.done=true;state.feedback=message;renderGame();feedback(message,true);if(wasDone)speak(message);else celebrate(message);afterRenderFocus();break;}
  }
 });

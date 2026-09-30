@@ -42,7 +42,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.cache/co
   console.log('OK: MP3 real, saludo, cuento, pausa, navegación, velocidad y felicitación encadenada');
   // Exercise the real renderers and hint functions: every reachable utterance needs a clip.
   const missing=await page.evaluate(()=>{
-   const absent=new Set();speak=text=>{if(!RECORDED_VOICE.files[LEARNING.voiceKey(text)])absent.add(text);};celebrate=speak;
+   const absent=new Set();speak=text=>{if(!RECORDED_VOICE.files[LEARNING.voiceKey(text)])absent.add(text);};celebrate=speak;playEffect=(kind,text)=>{if(text)speak(text);};
    for(const level of [1,2,3,4])for(const activity of activities.filter(a=>a.id!=='frases')){
     settings.level=level;settings.choices=levels[level].choices;settings.pieces=levels[level].pieces;route=activity.id;
     const total=route==='historias'?storyBank(level).length*3:route==='ordenar'?sentenceBank(level).length:route==='completar'?completionBank(level).length:route==='preguntas'?questionBank(level).length:route==='intruso'?intruderBank(level).length:reasoningGames.includes(route)?reasoningBank(route,level).length:route==='secuencia'?3:1;

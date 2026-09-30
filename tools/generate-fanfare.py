@@ -28,7 +28,10 @@ print('OK: fanfarria en tres volúmenes, 1.68 segundos, sin saturación.')
 
 # Short, softly fading interaction cues. Baked volume works with iPhone media audio.
 cues={'pick':[(660,0,.11)],'place':[(784,0,.12),(1047,.08,.15)],
-      'tick':[(440,0,.08)],'next':[(523,0,.12),(659,.07,.12),(784,.14,.16)]}
+      'tick':[(440,0,.08)],'next':[(523,0,.12),(659,.07,.12),(784,.14,.16)],
+      'option':[(740,0,.065)],'correct':[(880,0,.15),(1109,.08,.15),(1319,.16,.17)],
+      'retry':[(392,0,.14),(330,.13,.16)],'hint':[(659,0,.13),(988,.09,.18)],
+      'clear':[(587,0,.08),(440,.06,.1)]}
 for name,melody in cues.items():
     samples=[]
     for i in range(round(rate*max(start+duration for _,start,duration in melody))):
@@ -43,4 +46,4 @@ for name,melody in cues.items():
     with wave.open(str(output/f'ui-{name}.wav'),'wb') as audio:
         audio.setparams((1,2,rate,len(samples),'NONE','not compressed'))
         audio.writeframes(struct.pack('<'+'h'*len(samples),*samples))
-print('OK: cuatro efectos cortos de interacción.')
+print('OK: nueve efectos cortos de interacción.')

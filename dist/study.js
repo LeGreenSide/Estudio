@@ -123,19 +123,19 @@ const STUDY=(()=>{
   main.innerHTML=`<a class="back" href="#estudio">← Estudio para mis pruebas</a><div class="activity-header"><div><div class="eyebrow">${subject.name.toUpperCase()} · ${subject.date.toUpperCase()}</div><h1>${g.title}</h1><p>${g.subtitle}</p></div><div class="activity-tools">${levelPicker('study-game-level')}<span class="round-label">${q.type==='name'?'Práctica libre':`Actividad ${round%total+1} de ${total}`}</span></div></div><section class="game-panel">${body}${controls()}${!state.done&&q.type!=='name'?'<button class="quiet-btn study-skip" data-action="skip">Otro reto</button>':''}</section>`;
   if(q.type==='abacus')updateAbacus();if(q.type==='name')initPad();
  }
- function finish(message=state.q.help){state.done=true;state.feedback=message;render();feedback(message,true);celebrate(message);afterRenderFocus();}
- function answer(id){if(state.done||!state.ids.includes(id))return;if(id!==state.q.answer){feedback('Probemos otra vez. Puedes pedir una ayuda.');return;}finish();}
+ function finish(message=state.q.help,effects=['correct']){state.done=true;state.feedback=message;render();feedback(message,true);celebrate(message,settings,effects);afterRenderFocus();}
+ function answer(id){if(state.done||!state.ids.includes(id))return;if(id!==state.q.answer){retryFeedback('Probemos otra vez. Puedes pedir una ayuda.',true);return;}finish(state.q.help,['option','correct']);}
  function select(id){if(state.done||!state.ids.includes(id))return;state.selected=state.selected===id?null:id;main.querySelectorAll('[data-piece]').forEach(b=>{b.classList.toggle('selected',b.dataset.piece===state.selected);b.setAttribute('aria-pressed',String(b.dataset.piece===state.selected));});feedback('Ahora toca el espacio donde va.');playEffect('pick',state.q.tokens[id]);}
  function place(id,target){
   const q=state.q;if(state.done||!q.tokens||!state.ids.includes(id)||state.placed[id]!==undefined||Object.values(state.placed).includes(target))return;
-  if(q.tokens[id]!==q.tokens[Number(target)]){feedback('Esta pieza va en otro lugar. Puedes pedir una ayuda.');return;}
+  if(q.tokens[id]!==q.tokens[Number(target)]){retryFeedback('Esta pieza va en otro lugar. Puedes pedir una ayuda.');return;}
   state.placed[id]=target;state.selected=null;
   if(Object.keys(state.placed).length===q.tokens.length)finish();else{render();feedback('La palabra está en su lugar. Sigue construyendo.');playEffect('place');afterRenderFocus();}
  }
- function hint(){feedback(state.q.help);speak(state.q.help);}
+ function hint(){feedback(state.q.help);playEffect('hint',state.q.help);}
  function check(value){
   const q=state.q;if(state.done)return;
-  if(normalize(value)!==normalize(q.answer)){feedback('Revisa tu respuesta. Puedes ver una ayuda y volver a intentar.');return;}
+  if(normalize(value)!==normalize(q.answer)){retryFeedback('Revisa tu respuesta. Puedes ver una ayuda y volver a intentar.');return;}
   finish();
  }
  function updateAbacus(){
@@ -154,8 +154,8 @@ const STUDY=(()=>{
  function click(b){
   if(state.done&&b.dataset.study!=='clear-pad')return;
   if(b.dataset.bead!==undefined){if(state.done)return;const i=Number(b.dataset.bead);state.beads[i]=Math.max(0,Math.min(i===0?5:9,state.beads[i]+Number(b.dataset.delta)));updateAbacus();playEffect('tick');}
-  if(b.dataset.study==='check-abacus'){if(state.beads[0]*100+state.beads[1]*10+state.beads[2]===state.q.n)finish();else feedback('Mira cuántas centenas, decenas y unidades necesitas. Puedes pedir una ayuda.');}
-  if(b.dataset.study==='clear-pad'){const c=document.getElementById('name-pad');c.getContext('2d').clearRect(0,0,c.width,c.height);}
+  if(b.dataset.study==='check-abacus'){if(state.beads[0]*100+state.beads[1]*10+state.beads[2]===state.q.n)finish();else retryFeedback('Mira cuántas centenas, decenas y unidades necesitas. Puedes pedir una ayuda.');}
+  if(b.dataset.study==='clear-pad'){const c=document.getElementById('name-pad');c.getContext('2d').clearRect(0,0,c.width,c.height);playEffect('clear');}
   if(b.dataset.study==='finish-name'||b.dataset.study==='finish-writing'){
    if(state.done)return;
    if(b.dataset.study==='finish-writing'&&(!document.getElementById('study-writing').value.trim()||main.querySelectorAll('[data-review]:checked').length!==3)){feedback('Escribe tu idea y revisa las tres pistas con un adulto.');return;}

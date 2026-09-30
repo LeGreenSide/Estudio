@@ -36,7 +36,7 @@ El nivel se puede cambiar desde el catálogo o el juego. Ajustes permite persona
 
 La apariencia usa tarjetas de colores, ilustración vectorial propia, botones con relieve y colores por materia. Las celebraciones incluyen confeti breve; se respeta la preferencia de movimiento reducido del dispositivo.
 
-Hay cuatro efectos cortos al elegir una pieza, colocarla, mover el ábaco y avanzar. Usan el mismo reproductor que Catalina y se detienen al silenciar, navegar o descansar. En Ajustes se pueden desactivar los efectos manteniendo la voz y la fanfarria. El modo tranquilo reduce los colores y desactiva animaciones y sonidos de toque; la fanfarria conserva su interruptor independiente. `python tools/generate-fanfare.py` genera también estos cuatro WAV, sin servicios externos.
+Hay nueve efectos cortos: elegir una pieza, colocarla, mover el ábaco, avanzar, pulsar una opción, acertar, reintentar, pedir ayuda y borrar. Al responder una opción suena primero el toque y después el resultado; un acierto puede continuar con la fanfarria y Catalina. Los reintentos tienen dos notas suaves, sin alarma. Usan un único reproductor y se cancelan al silenciar, navegar o descansar. Puedes desactivar los efectos o la fanfarria conservando la voz, o apagar todo con el botón de sonido. El modo tranquilo desactiva los efectos de juego y las animaciones; la fanfarria conserva su propio interruptor. `python tools/generate-fanfare.py` genera estos WAV localmente.
 
 Al abrir la página aparece **Iniciar**. Tras pulsarlo se entra y se escucha **Hola Max**; se puede desmarcar «Entrar con sonido» antes de comenzar. Se recuerda la elección de sonido. Los enlaces directos a juegos también pasan por la entrada.
 
@@ -73,6 +73,8 @@ Web: [Max estudia](https://legreenside.github.io/Estudio/).
 El flujo `.github/workflows/pages.yml`, **Publicar Max estudia en GitHub Pages**, verifica el contenido y publica únicamente `dist`. Para actualizar la web después de subir cambios, ejecuta ese flujo manualmente desde Actions. Pages usa GitHub Actions como origen. Los archivos de pruebas y la configuración local no forman parte del sitio.
 
 ## Verificación
+
+`node test-answer-sounds.cjs` comprueba el orden de los sonidos al elegir, acertar y reintentar en ambos catálogos, así como ayuda, borrado, cancelación y modos silenciosos. Admite `TEST_BROWSER=webkit` y `TEST_URL`.
 
 `node test-study.cjs` valida los 22 juegos, cuatro niveles, orden alfabético, opciones y cálculos. `node test-study-ui.cjs` comprueba las respuestas, el ábaco, la escritura y el dibujo; recorre todos los retos en pantalla de 375 × 667, simulando la API de voz de Safari 15. Admite `TEST_BROWSER=webkit` y `TEST_URL` como la prueba móvil de audio.
 

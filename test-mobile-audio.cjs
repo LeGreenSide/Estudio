@@ -14,7 +14,7 @@ const {chromium,webkit}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.c
    window.AudioContext=window.webkitAudioContext=class{constructor(){throw Error('Web Audio blocked');}};
    window.audioPlayers=new Set();window.playLog=[];window.endedAudio=[];
    const play=HTMLMediaElement.prototype.play;
-   HTMLMediaElement.prototype.play=function(){if(!audioPlayers.has(this))this.addEventListener('ended',()=>endedAudio.push(this.getAttribute('src')));audioPlayers.add(this);playLog.push(this.getAttribute('src'));return play.call(this);};
+   HTMLMediaElement.prototype.play=function(){if(!audioPlayers.has(this))this.addEventListener('ended',()=>endedAudio.push(this.getAttribute('src')),true);audioPlayers.add(this);playLog.push(this.getAttribute('src'));return play.call(this);};
   },process.env.LEGACY_SPEECH==='1');
   const url=(process.env.TEST_URL||'http://127.0.0.1:4173').replace(/\/$/,'');
   await page.goto(url+'/#ordenar');assert.deepEqual(errors,[],'La carga debe terminar antes de pulsar Iniciar');
