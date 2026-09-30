@@ -6,9 +6,9 @@ let victoryCount=0;
 const praiseWords=['¡Excelente!','¡Increíble!','¡Bien hecho!','¡Lo lograste!','¡Muy bien!'];
 function hideVictory(){victoryPopup.hidden=true;}
 const {words,categories,activities,intruders,questions,sequences,shuffle,choices,classifyRound,levels,questionBank,intruderBank,longSequences,puzzleGrid,chooseVoice,sentenceBank,completionBank,storyBank,reasoningBank,advancedSequences}=LEARNING;
-const defaults={sound:true,level:2,choices:4,pieces:6,calm:false,rate:.95,voice:'recorded:catalina',voiceVersion:1,victory:true,victoryVolume:.65};
+const defaults={effects:true,sound:true,level:2,choices:4,pieces:6,calm:false,rate:.95,voice:'recorded:catalina',voiceVersion:1,victory:true,victoryVolume:.65};
 let settings={...defaults};
-try{const s=JSON.parse(localStorage.getItem('a-mi-ritmo-preferences'))||{};settings={sound:s.sound!==false,level:[1,2,3,4].includes(s.level)?s.level:2,choices:s.level&&[2,3,4].includes(s.choices)?s.choices:4,pieces:s.level&&[4,6,8,9,12,16].includes(s.pieces)?s.pieces:6,calm:s.calm===true,rate:[.7,.85,.95,1].includes(s.rate)?s.rate:.95,voice:s.voiceVersion===1&&typeof s.voice==='string'?s.voice:'recorded:catalina',voiceVersion:1,victory:s.victory!==false,victoryVolume:[.25,.65,1].includes(s.victoryVolume)?s.victoryVolume:.65};}catch{}
+try{const s=JSON.parse(localStorage.getItem('a-mi-ritmo-preferences'))||{};settings={effects:s.effects!==false,sound:s.sound!==false,level:[1,2,3,4].includes(s.level)?s.level:2,choices:s.level&&[2,3,4].includes(s.choices)?s.choices:4,pieces:s.level&&[4,6,8,9,12,16].includes(s.pieces)?s.pieces:6,calm:s.calm===true,rate:[.7,.85,.95,1].includes(s.rate)?s.rate:.95,voice:s.voiceVersion===1&&typeof s.voice==='string'?s.voice:'recorded:catalina',voiceVersion:1,victory:s.victory!==false,victoryVolume:[.25,.65,1].includes(s.victoryVolume)?s.victoryVolume:.65};}catch{}
 let started=false;
 const reasoningGames=activities.filter(a=>a.section==='razonar').map(a=>a.id);
 const answerGames=['intruso','preguntas','completar','historias',...reasoningGames];
@@ -69,6 +69,13 @@ function stopSpeech(){
  if(narrationAudio){narrationAudio.onended=null;narrationAudio.onerror=null;narrationAudio.pause();narrationAudio.removeAttribute('src');narrationAudio.load();}
  if('speechSynthesis' in window)speechSynthesis.cancel();
 }
+function playEffect(kind,text=''){
+ if(!settings.sound)return;
+ const next=()=>{if(text)speak(text);};
+ if(settings.effects===false||settings.calm){next();return;}
+ stopSpeech();
+ playAudio(['assets/ui-'+kind+'.wav'],{},next,next);
+}
 function celebrate(text,options=settings){
  stopSpeech();
  if(text){
@@ -113,13 +120,14 @@ function showSettings(){
  <label class="check-line"><input name="victory" type="checkbox" ${settings.victory?'checked':''}> Fanfarria al completar una actividad</label>
  <label for="victory-volume">Volumen de la fanfarria</label><select id="victory-volume" name="victoryVolume">${[[.25,'Suave'],[.65,'Medio'],[1,'Alto']].map(([n,l])=>`<option value="${n}" ${settings.victoryVolume===n?'selected':''}>${l}</option>`).join('')}</select>
  <button type="button" class="secondary audio-preview" data-action="preview-victory">Probar fanfarria</button>
- <label class="check-line"><input name="calm" type="checkbox" ${settings.calm?'checked':''}> Colores más suaves</label><div class="dialog-actions"><button type="button" class="secondary" data-action="close">Cancelar</button><button class="primary" type="submit">Guardar ajustes</button></div></form>`);
+ <label class="check-line"><input name="effects" type="checkbox" ${settings.effects!==false?'checked':''}> Sonidos al tocar, colocar piezas y avanzar</label>
+ <label class="check-line"><input name="calm" type="checkbox" ${settings.calm?'checked':''}> Modo tranquilo: colores suaves, sin animaciones ni sonidos de toque</label><div class="dialog-actions"><button type="button" class="secondary" data-action="close">Cancelar</button><button class="primary" type="submit">Guardar ajustes</button></div></form>`);
 }
 function pause(){openDialog(`<div class="pause-dialog"><div class="pause-symbol" aria-hidden="true">🌿</div><h2 id="dialog-title">Podemos descansar</h2><p>No hay apuro.<br>Tu actividad te espera aquí.</p><div class="dialog-actions"><button class="secondary" data-action="home">Ir al inicio</button><button class="primary" data-action="close">Quiero seguir</button></div></div>`);}
 function activityCards(list){return `<div class="activity-grid">${list.map(a=>`<a class="activity-card" href="#${a.id}"><div class="card-art ${a.color}"><span aria-hidden="true">${a.icon}</span></div><div class="tag">${a.tag}</div><h3>${a.title}</h3><p>${a.subtitle}</p><div class="card-footer"><span>${a.type}</span><span class="card-arrow" aria-hidden="true">↗</span></div></a>`).join('')}</div>`;}
 function home(){
- main.innerHTML=`<div class="page-heading"><div><div class="eyebrow">MAX ESTUDIA · A TU RITMO</div><h1>Hola Max, ¿a qué jugamos?</h1><p>Un espacio para descubrir, pensar y contar tus ideas.</p></div><span class="pace-label">◷ Sin prisa, sin cronómetro</span></div><section class="welcome-strip"><span class="strip-icon" aria-hidden="true">🌱</span><div class="welcome-copy"><h2>Una oración para empezar</h2><p>${settings.level===1?'Quién hace qué: juntamos palabras sencillas.':settings.level===2?'Contamos qué pasa, dónde y con qué.':settings.level===3?'Unimos ideas con «porque», «antes» y «después».':'Conectamos ideas con «si», «aunque» y «mientras».'}</p></div><a class="primary" href="#ordenar">Armar una oración <span aria-hidden="true">→</span></a></section><div class="section-heading"><h2>Mis actividades</h2>${levelPicker('home-level')}</div><p class="catalog-note">12 juegos · 48 oraciones · 32 frases · 12 cuentos · 4 niveles</p>${activityCards(['ordenar','completar','frases','historias','preguntas','clasificar','intruso','puzle','secuencia'].map(id=>activities.find(a=>a.id===id)))}<section class="reasoning-section" aria-labelledby="reasoning-heading"><div class="section-heading"><div><div class="eyebrow">PENSAR PASO A PASO</div><h2 id="reasoning-heading">Mi rincón de razonamiento</h2></div><a class="secondary" href="#razonar">Explorar</a></div><p class="catalog-note">72 retos para descubrir patrones, unir pistas y buscar soluciones.</p>${activityCards(activities.filter(a=>a.section==='razonar'))}</section><p class="home-note"><span aria-hidden="true">♡</span><span><strong>Cada intento cuenta.</strong> Puedes tocar, escuchar o jugar acompañado.</span></p>`;
- main.insertAdjacentHTML('afterbegin',`<section class="study-banner"><span aria-hidden="true">🎒</span><div><div class="eyebrow">PREPARAMOS LAS PRUEBAS</div><h2>Un poquito cada día</h2><p>Lenguaje, números hasta el 599 y geometría. Juegos para el temario de octubre.</p></div><a class="primary" href="#estudio">Estudio para mis pruebas →</a></section>`);
+ main.innerHTML=`<section class="learning-hero"><div><span class="hero-label">BIENVENIDO A TU AVENTURA</span><h1>Hola Max,<br>¿qué descubrimos <em>hoy?</em></h1><p>Cada palabra, cada número y cada intento abre una nueva puerta. ¡Vamos a jugar!</p><div class="hero-pills"><span>✦ A tu ritmo</span><span>♪ Escucha y explora</span><span>♡ Con ayuda siempre</span></div></div><img src="assets/learning-island.svg" alt="" width="600" height="420"></section><section class="welcome-strip"><span class="strip-icon" aria-hidden="true">🌱</span><div class="welcome-copy"><h2>Una oración para empezar</h2><p>${settings.level===1?'Quién hace qué: juntamos palabras sencillas.':settings.level===2?'Contamos qué pasa, dónde y con qué.':settings.level===3?'Unimos ideas con «porque», «antes» y «después».':'Conectamos ideas con «si», «aunque» y «mientras».'}</p></div><a class="primary" href="#ordenar">Armar una oración <span aria-hidden="true">→</span></a></section><div class="section-heading"><h2>Mis actividades</h2>${levelPicker('home-level')}</div><p class="catalog-note">12 juegos · 48 oraciones · 32 frases · 12 cuentos · 4 niveles</p>${activityCards(['ordenar','completar','frases','historias','preguntas','clasificar','intruso','puzle','secuencia'].map(id=>activities.find(a=>a.id===id)))}<section class="reasoning-section" aria-labelledby="reasoning-heading"><div class="section-heading"><div><div class="eyebrow">PENSAR PASO A PASO</div><h2 id="reasoning-heading">Mi rincón de razonamiento</h2></div><a class="secondary" href="#razonar">Explorar</a></div><p class="catalog-note">72 retos para descubrir patrones, unir pistas y buscar soluciones.</p>${activityCards(activities.filter(a=>a.section==='razonar'))}</section><p class="home-note"><span aria-hidden="true">♡</span><span><strong>Cada intento cuenta.</strong> Puedes tocar, escuchar o jugar acompañado.</span></p>`;
+ main.querySelector('.learning-hero').insertAdjacentHTML('afterend',`<section class="study-banner"><span aria-hidden="true">🎒</span><div><div class="eyebrow">PREPARAMOS LAS PRUEBAS</div><h2>Un poquito cada día</h2><p>Lenguaje, números hasta el 599 y geometría. Juegos para el temario de octubre.</p></div><a class="primary" href="#estudio">Estudio para mis pruebas →</a></section>`);
 }
 function reasoningHome(){
  main.innerHTML=`<a class="back" href="#inicio">← Mis actividades</a><div class="page-heading"><div><div class="eyebrow">MI RINCÓN DE RAZONAMIENTO</div><h1>Observo, pienso y descubro</h1><p>Una pista a la vez. Puedes escuchar y pedir ayuda.</p></div>${levelPicker('reasoning-level')}</div><section class="welcome-strip"><span class="strip-icon" aria-hidden="true">💡</span><div class="welcome-copy"><h2>Hay tiempo para pensar</h2><p>Mira las pistas, prueba una respuesta y descubre por qué encaja.</p></div></section>${activityCards(activities.filter(a=>a.section==='razonar'))}<p class="home-note">6 retos por juego y nivel · 72 en total · Sin tiempo límite</p>`;
@@ -212,7 +220,7 @@ function select(id){
  main.querySelectorAll('[data-piece]').forEach(b=>{const selected=b.dataset.piece===state.selected;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});
  const label=route==='ordenar'?state.sentence.tokens[id]:route==='secuencia'?state.steps[id][1]:words[id]?.[1]||`Pieza ${Number(id)+1}`;
  feedback(state.selected?`${label}. Ahora elige su lugar.`:'Puedes elegir otra imagen.');
- speak(label);
+ playEffect('pick',label);
 }
 function afterRenderFocus(){
  if(!victoryPopup.hidden){victoryPopup.querySelector('[data-action="victory-next"]').focus({preventScroll:true});return;}
@@ -231,7 +239,7 @@ function place(id,target){
  state.placed[id]=target;state.selected=null;
  state.done=Object.keys(state.placed).length===state.ids.length;
  state.feedback=state.done?(route==='ordenar'?state.sentence.text+'.':route==='puzle'?'¡La imagen está completa! Veo un niño y un perro. ¿Qué ves tú?':route==='secuencia'?'La secuencia está lista. Pueden contar los pasos juntos.':'¡Cada cosa en su lugar! Puedes señalar o nombrar las imágenes.'):(route==='clasificar'?`${words[id][1]} va con ${categories[target][1].toLowerCase()}.`:route==='ordenar'?'La palabra está en su lugar. Sigue construyendo.':'La imagen encontró su lugar.');
- renderGame();announce(state.feedback);if(state.done)celebrate(state.feedback);else speak(state.feedback);afterRenderFocus();
+ renderGame();announce(state.feedback);if(state.done)celebrate(state.feedback);else playEffect('place',state.feedback);afterRenderFocus();
 }
 function answer(id){
  if(STUDY.active()){STUDY.answer(id);return;}
@@ -296,7 +304,7 @@ document.addEventListener('click',event=>{
   case 'skip':round+=route==='historias'?3-round%3:1;setupRound();renderGame();main.focus();window.scrollTo(0,0);break;
   case 'victory-close':hideVictory();stopSpeech();afterRenderFocus();break;
   case 'victory-next':
-  case 'next':round++;setupRound();renderGame();main.focus();window.scrollTo(0,0);break;
+  case 'next':round++;setupRound();renderGame();main.focus();window.scrollTo(0,0);playEffect('next');break;
   case 'clear-message':state.message=[];state.detail='';state.place='';state.done=false;state.feedback='Puedes elegir otra imagen.';renderGame();afterRenderFocus();break;
   case 'say-sentence':{const wasDone=state.done;const message=state.prefix+' '+state.message.map(phraseWord).join(' ')+([state.detail,state.place].filter(Boolean).length?' '+[state.detail,state.place].filter(Boolean).join(' '):'');state.done=true;state.feedback=message;renderGame();feedback(message,true);if(wasDone)speak(message);else celebrate(message);afterRenderFocus();break;}
  }
@@ -317,7 +325,7 @@ dialog.addEventListener('close',stopSpeech);
 dialog.addEventListener('submit',event=>{
  if(event.target.id!=='settings-form')return;
  event.preventDefault();const data=new FormData(event.target);
- settings={level:Number(data.get('level')),choices:Number(data.get('choices')),pieces:Number(data.get('pieces')),rate:Number(data.get('rate')),voice:data.get('voice'),voiceVersion:1,sound:data.has('sound'),calm:data.has('calm'),victory:data.has('victory'),victoryVolume:Number(data.get('victoryVolume'))};applySettings();dialog.close();navigate();announce('Ajustes guardados.');
+ settings={effects:data.has('effects'),level:Number(data.get('level')),choices:Number(data.get('choices')),pieces:Number(data.get('pieces')),rate:Number(data.get('rate')),voice:data.get('voice'),voiceVersion:1,sound:data.has('sound'),calm:data.has('calm'),victory:data.has('victory'),victoryVolume:Number(data.get('victoryVolume'))};applySettings();dialog.close();navigate();announce('Ajustes guardados.');
 });
 // Pointer events cover mouse, pen and touch. The same place() handles click/keyboard.
 function trackDrag(){

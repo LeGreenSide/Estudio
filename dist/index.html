@@ -9,17 +9,18 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%2314695f'/%3E%3Cpath d='M10 12h20v14H18l-7 5v-5h-1z' fill='%23fff'/%3E%3Ccircle cx='17' cy='19' r='2' fill='%2314695f'/%3E%3Ccircle cx='24' cy='19' r='2' fill='%2314695f'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css?v=estudio-4">
   <link rel="stylesheet" href="study.css?v=estudio-4">
+  <link rel="stylesheet" href="theme.css?v=color-5">
   <script src="data.js?v=catalina-1" defer></script>
   <script src="voice.js?v=estudio-4" defer></script>
-  <script src="study.js?v=estudio-4" defer></script>
-  <script src="app.js?v=estudio-4" defer></script>
+  <script src="study.js?v=color-5" defer></script>
+  <script src="app.js?v=color-5" defer></script>
 </head>
 <body>
   <section id="entry" class="entry-screen" aria-labelledby="entry-title">
     <div class="entry-card">
-      <div class="entry-art" aria-hidden="true"><span>📖</span><span>🧩</span><span>💡</span></div>
+      <div class="entry-art" aria-hidden="true"><img src="assets/learning-island.svg" alt="" width="260" height="182"></div>
       <p class="eyebrow">TU ESPACIO PARA DESCUBRIR</p>
-      <h1 id="entry-title">Max estudia<span>Un pequeño paso.<br>Una nueva idea.</span></h1>
+      <h1 id="entry-title">Max estudia<span>¡Una aventura para aprender!</span></h1>
       <p>Juegos, palabras y retos para aprender a tu ritmo.</p>
       <button class="primary start-button" data-action="start">Iniciar <span aria-hidden="true">→</span></button>
       <label class="entry-sound"><input id="start-sound" type="checkbox" checked> Entrar con sonido · «Hola Max»</label>
@@ -33,7 +34,7 @@
     <nav aria-label="Navegación principal">
       <a href="#inicio" data-nav="inicio"><span aria-hidden="true">⌂</span> Mis actividades</a>
       <a href="#estudio" data-nav="estudio"><span aria-hidden="true">▤</span> Mis pruebas</a>
-      <a href="#razonar" data-nav="razonar"><span aria-hidden="true">✧</span> Razonamiento</a>
+      <a href="#razonar" data-nav="razonar"><span aria-hidden="true">✧</span> Razonar</a>
       <a href="#familia" data-nav="familia"><span aria-hidden="true">♡</span> En familia</a>
     </nav>
     <div class="sidebar-note"><span aria-hidden="true">☀</span><strong>Cada intento cuenta.</strong><p>Hay muchas maneras<br>de comunicarnos.</p></div>
@@ -49,6 +50,7 @@
   <div id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
   <section id="victory-popup" class="victory-popup" role="region" aria-labelledby="victory-title" hidden>
+    <div class="celebration-confetti" aria-hidden="true"><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i><i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i></div>
     <button class="victory-close" data-action="victory-close" aria-label="Cerrar felicitación">×</button>
     <div class="victory-stars" aria-hidden="true">★ <span>★</span> ★</div>
     <p class="victory-label">ACTIVIDAD COMPLETADA</p>

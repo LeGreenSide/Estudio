@@ -34,6 +34,10 @@ El nivel se puede cambiar desde el catálogo o el juego. Ajustes permite persona
 
 ## Entrada y sonido
 
+La apariencia usa tarjetas de colores, ilustración vectorial propia, botones con relieve y colores por materia. Las celebraciones incluyen confeti breve; se respeta la preferencia de movimiento reducido del dispositivo.
+
+Hay cuatro efectos cortos al elegir una pieza, colocarla, mover el ábaco y avanzar. Usan el mismo reproductor que Catalina y se detienen al silenciar, navegar o descansar. En Ajustes se pueden desactivar los efectos manteniendo la voz y la fanfarria. El modo tranquilo reduce los colores y desactiva animaciones y sonidos de toque; la fanfarria conserva su interruptor independiente. `python tools/generate-fanfare.py` genera también estos cuatro WAV, sin servicios externos.
+
 Al abrir la página aparece **Iniciar**. Tras pulsarlo se entra y se escucha **Hola Max**; se puede desmarcar «Entrar con sonido» antes de comenzar. Se recuerda la elección de sonido. Los enlaces directos a juegos también pasan por la entrada.
 
 Las victorias muestran Excelente, Increíble, Bien hecho, Lo lograste o Muy bien. La fanfarria precede a la voz, tiene volumen independiente (Suave, Medio y Alto) y puede desactivarse. El volumen predeterminado aumentó; los antiguos valores bajos se migran a Medio. Cerrar la felicitación, descansar o navegar cancela la reproducción pendiente.

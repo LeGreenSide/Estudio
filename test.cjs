@@ -75,6 +75,11 @@ assert.equal(new Set(Object.values(recorded.files)).size,catalog.length);
 const {voiceKey}=require('./dist/data.js');
 assert.equal(voiceKey('¡Hola, Max!'),voiceKey('Hola Max'));assert.notEqual(voiceKey('sí'),voiceKey('si'));
 let previousEnergy=0;
+for(const name of ['pick','place','tick','next']){
+ const wav=readFileSync(`./dist/assets/ui-${name}.wav`);assert.equal(wav.toString('ascii',0,4),'RIFF');
+ const duration=(wav.length-44)/2/wav.readUInt32LE(24);assert(duration>0&&duration<=.35);
+ let peak=0;for(let i=44;i<wav.length;i+=2)peak=Math.max(peak,Math.abs(wav.readInt16LE(i)));assert(peak>1000&&peak<10000);
+}
 for(const level of [25,65,100]){
  const wav=readFileSync(`./dist/assets/fanfare-${level}.wav`);
  assert.equal(wav.toString('ascii',0,4),'RIFF');assert.equal(wav.toString('ascii',8,12),'WAVE');

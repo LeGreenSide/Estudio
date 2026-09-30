@@ -125,12 +125,12 @@ const STUDY=(()=>{
  }
  function finish(message=state.q.help){state.done=true;state.feedback=message;render();feedback(message,true);celebrate(message);afterRenderFocus();}
  function answer(id){if(state.done||!state.ids.includes(id))return;if(id!==state.q.answer){feedback('Probemos otra vez. Puedes pedir una ayuda.');return;}finish();}
- function select(id){if(state.done||!state.ids.includes(id))return;state.selected=state.selected===id?null:id;main.querySelectorAll('[data-piece]').forEach(b=>{b.classList.toggle('selected',b.dataset.piece===state.selected);b.setAttribute('aria-pressed',String(b.dataset.piece===state.selected));});feedback('Ahora toca el espacio donde va.');speak(state.q.tokens[id]);}
+ function select(id){if(state.done||!state.ids.includes(id))return;state.selected=state.selected===id?null:id;main.querySelectorAll('[data-piece]').forEach(b=>{b.classList.toggle('selected',b.dataset.piece===state.selected);b.setAttribute('aria-pressed',String(b.dataset.piece===state.selected));});feedback('Ahora toca el espacio donde va.');playEffect('pick',state.q.tokens[id]);}
  function place(id,target){
   const q=state.q;if(state.done||!q.tokens||!state.ids.includes(id)||state.placed[id]!==undefined||Object.values(state.placed).includes(target))return;
   if(q.tokens[id]!==q.tokens[Number(target)]){feedback('Esta pieza va en otro lugar. Puedes pedir una ayuda.');return;}
   state.placed[id]=target;state.selected=null;
-  if(Object.keys(state.placed).length===q.tokens.length)finish();else{render();feedback('La palabra está en su lugar. Sigue construyendo.');afterRenderFocus();}
+  if(Object.keys(state.placed).length===q.tokens.length)finish();else{render();feedback('La palabra está en su lugar. Sigue construyendo.');playEffect('place');afterRenderFocus();}
  }
  function hint(){feedback(state.q.help);speak(state.q.help);}
  function check(value){
@@ -153,7 +153,7 @@ const STUDY=(()=>{
  }
  function click(b){
   if(state.done&&b.dataset.study!=='clear-pad')return;
-  if(b.dataset.bead!==undefined){if(state.done)return;const i=Number(b.dataset.bead);state.beads[i]=Math.max(0,Math.min(i===0?5:9,state.beads[i]+Number(b.dataset.delta)));updateAbacus();}
+  if(b.dataset.bead!==undefined){if(state.done)return;const i=Number(b.dataset.bead);state.beads[i]=Math.max(0,Math.min(i===0?5:9,state.beads[i]+Number(b.dataset.delta)));updateAbacus();playEffect('tick');}
   if(b.dataset.study==='check-abacus'){if(state.beads[0]*100+state.beads[1]*10+state.beads[2]===state.q.n)finish();else feedback('Mira cuántas centenas, decenas y unidades necesitas. Puedes pedir una ayuda.');}
   if(b.dataset.study==='clear-pad'){const c=document.getElementById('name-pad');c.getContext('2d').clearRect(0,0,c.width,c.height);}
   if(b.dataset.study==='finish-name'||b.dataset.study==='finish-writing'){
