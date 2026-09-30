@@ -39,6 +39,12 @@ const STUDY=(()=>{
  }
  const normalize=s=>String(s).trim().toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
  const numbers=[ [3,8,12,20,25,31,46,50,63,72,88,99], [100,104,119,130,145,170,199,200,205,221,260,299], [300,302,319,340,365,399,400,409,425,460,478,499], [500,501,509,510,521,536,548,560,575,589,598,599] ];
+ const comparisons=[
+  [[8,35],[62,20],[14,14],[90,45],[27,70],[50,50],[3,81],[99,99],[76,31],[40,88],[65,65],[58,12]],
+  [[100,235],[280,125],[160,160],[45,210],[299,80],[205,205],[170,60],[120,260],[99,99],[245,110],[75,198],[290,290]],
+  [[125,346],[480,215],[302,302],[399,140],[86,420],[250,250],[190,365],[499,72],[408,408],[310,155],[230,470],[99,99]],
+  [[100,235],[346,125],[509,509],[580,240],[75,420],[360,360],[190,599],[500,85],[128,128],[455,210],[265,540],[599,599]]
+ ];
  const sentences=[
   ['El gato duerme','🐈 💤'],['La niña canta','👧 🎵'],['Mi perro juega','🐕 ⚽'],['El sol brilla','☀️'],
   ['La pelota roja rebota','🔴 ⚽'],['Ana lee un cuento','👧 📖'],['El pájaro vuela alto','🐦 ☁️'],['Mi mamá cocina sopa','🥣'],
@@ -71,7 +77,7 @@ const STUDY=(()=>{
    const before=r%2===1||n===599,answer=before?n-1:n+1;
    return question(`¿Cuál es el ${before?'antecesor':'sucesor'} de ${n}?`,[answer,n,before?(n===599?n-2:n+1):n-1],answer,`${before?'Restamos':'Sumamos'} uno. El ${before?'antecesor':'sucesor'} de ${n} es ${answer}.`,{clue:before?`… ← ${n}`:`${n} → …`});
   }
-  if(key==='comparar'){const b=r%3===0?n:r%3===1?Math.min(599,n+level*2):Math.max(0,n-level*2),answer=n===b?'=':n<b?'<':'>';return question('Elige el signo correcto.',['<','>','='],answer,`${n} es ${signNames[answer].toLowerCase()} ${b}.`,{clue:`${n} □ ${b}`,signs:true,note:'La parte abierta del signo mira al número mayor.'});}
+  if(key==='comparar'){const [a,b]=comparisons[level-1][r],answer=a===b?'=':a<b?'<':'>';return question('Elige el signo correcto.',['<','>','='],answer,`${a} es ${signNames[answer].toLowerCase()} ${b}.`,{clue:`${a} □ ${b}`,signs:true,note:'La parte abierta del signo mira al número mayor.'});}
   if(key==='orden'){
    const start=Math.min(n,[99,299,499,599][level-1]-(level+1)*(level+2));
    const values=Array.from({length:level+2},(_,i)=>start+i*(level+2)).sort((a,b)=>r%2?b-a:a-b);

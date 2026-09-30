@@ -18,6 +18,15 @@ for(const game of S.games)for(let level=1;level<=4;level++)for(let i=0;i<S.total
  if(game.key==='vecinos'||game.key==='patron')assert(q.options.every(x=>Number(x)>=0&&Number(x)<=599));
  if(game.key==='descomponer')assert.equal(q.answer.split(' + ').reduce((sum,n)=>sum+Number(n),0),Number(q.clue));
  if(game.key==='componer')assert.equal(q.clue.split(' + ').reduce((sum,n)=>sum+Number(n),0),Number(q.answer));
- if(game.key==='comparar'){const [a,b]=q.clue.split(' □ ').map(Number);assert.equal(q.answer,a===b?'=':a<b?'<':'>');}
+ if(game.key==='comparar'){
+  const [a,b]=q.clue.split(' □ ').map(Number);assert.equal(q.answer,a===b?'=':a<b?'<':'>');
+  assert([a,b].every(n=>Number.isInteger(n)&&n>=0&&n<=[99,299,499,599][level-1]));
+  assert(a===b||Math.abs(a-b)>=(level===1?10:50),'Las comparaciones deben tener diferencias amplias');
+ }
+}
+for(let level=1;level<=4;level++){
+ const rounds=Array.from({length:S.total},(_,i)=>S.exercise('comparar',level,i));
+ assert.equal(new Set(rounds.map(q=>q.clue)).size,S.total);
+ for(const sign of ['<','>','='])assert.equal(rounds.filter(q=>q.answer===sign).length,4);
 }
 console.log('OK: 22 juegos, cuatro niveles, alfabeto español, números hasta 599, operaciones y opciones.');
