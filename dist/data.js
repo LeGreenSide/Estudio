@@ -43,7 +43,7 @@ const LEARNING = (() => {
     { title:'Comer un plátano', steps:[['🍌','Tomar el plátano'],['🤲','Pelar el plátano'],['😋','Comer el plátano']], short:[['🤲','Pelar el plátano'],['😋','Comer el plátano']] },
     { title:'Salir a jugar', steps:[['👟','Ponerse los zapatos'],['🚪','Salir de casa'],['⚽','Jugar con la pelota']], short:[['👟','Ponerse los zapatos'],['⚽','Jugar con la pelota']] }
   ];
-  const levels={1:{name:'Primeros pasos',choices:2,pieces:4},2:{name:'Explorar',choices:4,pieces:6},3:{name:'Un nuevo reto',choices:4,pieces:12},4:{name:'Conecto mis ideas',choices:4,pieces:16}};
+  const levels={1:{name:'Primeros pasos',choices:2,pieces:4},2:{name:'Explorar',choices:4,pieces:6},3:{name:'Un nuevo reto',choices:4,pieces:12},4:{name:'Conecto mis ideas',choices:4,pieces:16},5:{name:'Aplico lo aprendido',choices:4,pieces:16}};
   const sentenceRows=[
     [1,'El perro duerme','🐕 🛏️'],[1,'La niña salta','👧 ⬆️'],[1,'El gato come','🐈 🍽️'],[1,'El bebé ríe','👶 😊'],
     [1,'La vaca camina','🐄 👣'],[1,'El pájaro vuela','🐦 ☁️'],[1,'El niño bebe agua','🧒 🥤 💧'],[1,'La niña come pan','👧 🍽️ 🍞'],
@@ -134,7 +134,19 @@ const LEARNING = (() => {
     [4,'Como hace frío me pongo la chaqueta antes de salir','❄️ 🧥 🚪'],
     [4,'Quiero terminar este dibujo y después jugar con mi hermano','🖍️ 🖼️ 🤝 ⚽'],
     [4,'Si el vaso está vacío necesito llenarlo para beber agua','🥛 💧'],
-    [4,'Prefiero la manzana verde pero hoy solo hay manzanas rojas','🍏 🍎']
+    [4,'Prefiero la manzana verde pero hoy solo hay manzanas rojas','🍏 🍎'],
+    [5,'La semilla creció porque recibió agua y luz','🌱 💧 ☀️'],
+    [5,'Ayer leí un cuento y hoy escribo su final','📖 ✏️'],
+    [5,'Los estudiantes ordenan sus libros antes de salir al recreo','🧒 📚 🏫'],
+    [5,'Primero observo el problema y después explico mi respuesta','🔎 💬'],
+    [5,'El perro encontró la pelota que estaba detrás del árbol','🐕 ⚽ 🌳'],
+    [5,'Camila llevó una chaqueta porque la mañana estaba fría','👧 🧥 ❄️'],
+    [5,'Mañana plantaremos semillas para observar cómo crecen','🗓️ 🌱 🔎'],
+    [5,'Mi hermano dibuja un paisaje mientras yo escribo un cuento','🖍️ 🏞️ ✏️ 📖'],
+    [5,'Las mariposas tienen alas y los peces tienen aletas','🦋 🐟'],
+    [5,'Después de medir la mesa anotamos su largo','📏 📝'],
+    [5,'Si juntamos dos grupos iguales podemos calcular el doble','🟦 🟦 ➕'],
+    [5,'El título nos da una pista sobre el cuento','📖 🔎']
   );
   completions.push(
     [4,'Dos acciones ocurren al mismo tiempo.','Yo dibujo ___ mi hermana lee.','mientras',['después','debajo','para'],'🖍️ 📖'],
@@ -144,23 +156,53 @@ const LEARNING = (() => {
     [4,'Ayer ocurrió la visita. Ya terminó.','Ayer nosotros ___ al parque.','fuimos',['iremos','ir','voy'],'🗓️ 🌳'],
     [4,'Mañana todavía no llega.','Mañana yo ___ un cuento.','leeré',['leí','leyeron','leyendo'],'🗓️ 📖'],
     [4,'Identificamos a la niña que tiene la mochila.','La niña ___ tiene mochila espera el bus.','que',['pero','para','aunque'],'👧 🎒 🚌'],
-    [4,'El vaso está vacío. Por esa razón lo lleno.','El vaso está vacío; ___ lo lleno.','por eso',['sin embargo','antes','debajo'],'🥛 💧']
+    [4,'El vaso está vacío. Por esa razón lo lleno.','El vaso está vacío; ___ lo lleno.','por eso',['sin embargo','antes','debajo'],'🥛 💧'],
+    [5,'La acción ocurrió ayer. Hablan varias niñas.','Ayer las niñas ___ un cuento.','leyeron',['leerán','leo','leer'],'👧 👧 📖'],
+    [5,'La acción será mañana. Hablamos de nosotros.','Mañana nosotros ___ semillas.','plantaremos',['planté','plantaron','plantando'],'🗓️ 🌱'],
+    [5,'Son varias mariposas y todas tienen muchos colores.','Las mariposas ___ vuelan sobre las flores.','coloridas',['colorido','colorida','coloridos'],'🦋 🌼'],
+    [5,'La lluvia hizo que se mojara el patio.','El patio está mojado ___ llovió.','porque',['pero','aunque','antes'],'🌧️ 🏫'],
+    [5,'Buscamos el propósito de usar una regla.','Usamos la regla ___ medir el largo.','para',['pero','aunque','dentro'],'📏 📐'],
+    [5,'La instrucción dice: mide y luego anota.','___ de anotar el largo, debes medir.','Antes',['Después','Debajo','Dentro'],'📏 📝'],
+    [5,'La biblioteca tiene muchos libros. Habla de todos ellos.','Los libros son interesantes. Me gusta ___ .','leerlos',['leerlo','leerla','leerlas'],'📚 👀'],
+    [5,'Hay dos cantidades iguales: Ana tiene cinco y Leo tiene cinco.','Ana tiene tantos lápices ___ Leo.','como',['porque','pero','antes'],'✏️ ✏️']
   );
   stories.push(
     {level:4,title:'El libro que cambió de lugar',scene:'👧 📖 🪑 🗄️',lines:['Luna dejó su libro sobre una silla.','Mientras Luna estaba en el patio, papá puso el libro en un estante.','Cuando volvió, Luna buscó primero en la silla, pero no lo encontró.','Le preguntó a papá y él le mostró el estante.'],questions:[['¿Dónde está el libro al final?','En el estante','En la silla','En el patio'],['¿Por qué Luna busca primero en la silla?','Porque allí lo había dejado','Porque papá se lo dijo','Porque lo vio en el estante'],['¿Qué le permite encontrar el libro?','Preguntarle a papá','Salir al patio','Mirar por la ventana']]},
     {level:4,title:'Dos planes para la tarde',scene:'🧒 🧩 🌳 🌧️',lines:['Max quiere ir al parque después de terminar su puzle.','Acuerda con su papá: si llueve, jugarán con bloques en casa.','Max termina el puzle y mira por la ventana. Está lloviendo.','Saca los bloques y construye una torre con su papá.'],questions:[['¿Qué condición cambia el plan?','Que llueva','Que haya bloques','Que el puzle tenga piezas'],['¿Qué termina antes de jugar con bloques?','El puzle','Una torre','Un dibujo'],['Si no hubiera llovido, ¿cuál era el plan?','Ir al parque','Lavar los bloques','Buscar un libro']]},
-    {level:4,title:'Las botellas del paseo',scene:'👧 🧒 💧 🎒',lines:['Eva y Nico preparan un paseo. Cada uno necesita una botella con agua.','Eva tiene su botella llena, pero la de Nico está vacía.','Nico llena su botella y la cierra antes de ponerla en la mochila.','Ahora los dos tienen agua para el camino.'],questions:[['¿De quién era la botella vacía?','De Nico','De Eva','De ambos'],['¿Para qué la cierra antes de guardarla?','Para que no se salga el agua','Para que pese menos','Para vaciarla'],['¿Qué tienen en común al final?','Ambos llevan agua','Ambos tienen botellas vacías','Ambos dejaron las mochilas']]}
+    {level:4,title:'Las botellas del paseo',scene:'👧 🧒 💧 🎒',lines:['Eva y Nico preparan un paseo. Cada uno necesita una botella con agua.','Eva tiene su botella llena, pero la de Nico está vacía.','Nico llena su botella y la cierra antes de ponerla en la mochila.','Ahora los dos tienen agua para el camino.'],questions:[['¿De quién era la botella vacía?','De Nico','De Eva','De ambos'],['¿Para qué la cierra antes de guardarla?','Para que no se salga el agua','Para que pese menos','Para vaciarla'],['¿Qué tienen en común al final?','Ambos llevan agua','Ambos tienen botellas vacías','Ambos dejaron las mochilas']]},
+    {level:5,title:'El huerto del curso',scene:'🏫 🌱 💧 📝',lines:['El curso de Max plantó porotos en macetas.','Cada día observan las plantas y anotan los cambios en un cuaderno.','Hoy una planta tiene dos hojas nuevas. Max la dibuja y escribe la fecha.','El viernes compararán los dibujos para descubrir cómo creció.'],questions:[['¿Para qué anotan los cambios?','Para comparar cómo crecen las plantas','Para contar las mesas','Para elegir una mochila'],['¿Qué dato muestra un cambio en la planta?','Tiene dos hojas nuevas','Está en una maceta','Pertenece al curso'],['¿Qué título también sirve para este texto?','Observamos el crecimiento de una planta','Un paseo en bicicleta','La receta del pan']]},
+    {level:5,title:'La invitación de Elisa',scene:'✉️ 👧 📚 🏫',lines:['Elisa escribe: «Te invito a leer cuentos el viernes en la biblioteca».','Su hermano lee la invitación y pregunta: «¿A qué hora?».','Elisa agrega: «A las cuatro de la tarde».','Ahora sus amigos saben el día, la hora y el lugar del encuentro.'],questions:[['¿Qué información faltaba al principio?','La hora','El lugar','El día'],['¿Para qué escribió Elisa?','Para invitar a leer cuentos','Para explicar una receta','Para describir un animal'],['¿Cuál es el plan completo?','Leer el viernes a las cuatro en la biblioteca','Leer el lunes en el patio','Jugar el viernes en la casa']]},
+    {level:5,title:'La solución de Benjamín',scene:'🧒 📏 📄 ✏️',lines:['Benjamín y Antonia quieren comparar el largo de dos hojas.','Benjamín propone medir una con pasos y la otra con una regla.','Antonia dice: «Usemos la misma regla para las dos».','Miden desde el cero: una hoja mide veinte centímetros y la otra treinta.'],questions:[['¿Por qué sirve la idea de Antonia?','Permite comparar usando la misma unidad','Hace que las hojas crezcan','Evita mirar los números'],['¿Qué hoja es más larga?','La de treinta centímetros','La de veinte centímetros','Las dos son iguales'],['¿Qué hicieron antes de comparar los números?','Midieron las dos hojas','Guardaron la regla','Cortaron las hojas']]}
   );
   const advancedSequences=[
     {title:'Del dibujo a la carpeta',steps:[['📄','Tomar una hoja'],['✏️','Dibujar un círculo en la hoja'],['🖍️','Colorear el círculo dibujado'],['📝','Escribir el nombre en el dibujo coloreado'],['📂','Abrir la carpeta'],['🖼️','Poner el dibujo en la carpeta abierta'],['✅','Cerrar la carpeta con el dibujo dentro']]},
     {title:'Preparar una maceta',steps:[['🪴','Tomar una maceta vacía'],['🟤','Poner tierra en la maceta'],['☝️','Hacer un hoyito en la tierra'],['🌱','Colocar una semilla en el hoyito'],['🟤','Cubrir la semilla con tierra'],['💧','Regar la tierra que cubre la semilla'],['☀️','Llevar la maceta regada a la luz']]},
     {title:'Una carta para la abuela',steps:[['📄','Elegir una hoja para la carta'],['✏️','Escribir la carta en la hoja'],['📃','Doblar la carta escrita'],['✉️','Poner la carta doblada en el sobre'],['✅','Cerrar el sobre con la carta dentro'],['📝','Escribir la dirección en el sobre cerrado'],['📮','Llevar el sobre con dirección al correo']]}
   ];
+  const applicationSequences=[
+    {title:'Revisar y compartir un cuento',steps:[['💡','Elegir una idea para el cuento'],['✏️','Escribir el cuento con esa idea'],['👀','Leer el cuento escrito para revisarlo'],['📝','Corregir lo que encontré al revisar'],['📖','Leer en voz alta el cuento corregido'],['💬','Responder preguntas después de la lectura']]},
+    {title:'Construir un gráfico de frutas',steps:[['❓','Preguntar la fruta favorita a cinco personas'],['📝','Anotar las cinco respuestas'],['🔢','Contar cuántas veces aparece cada fruta anotada'],['📊','Dibujar una barra con cada cantidad contada'],['👀','Comparar las barras dibujadas'],['💬','Decir qué fruta fue la más elegida según el gráfico']]},
+    {title:'Medir y comparar dos lápices',steps:[['✏️','Elegir dos lápices para comparar'],['📏','Medir el primer lápiz desde el cero de la regla'],['📝','Anotar la primera medida'],['📏','Medir el segundo lápiz con la misma regla'],['📝','Anotar la segunda medida junto a la primera'],['🔎','Comparar las dos medidas anotadas']]}
+  ];
+  function sequenceBank(level){return level===5?applicationSequences:level===4?advancedSequences:level===3?longSequences:sequences;}
+  const applicationWords={
+    ballena:['🐋','Ballena','animales'],conejo:['🐇','Conejo','animales'],mariposa:['🦋','Mariposa','animales'],pez:['🐟','Pez','animales'],
+    queso:['🧀','Queso','alimentos'],arroz:['🍚','Arroz','alimentos'],porotos:['🫘','Porotos','alimentos'],lechuga:['🥬','Lechuga','alimentos'],
+    bufanda:['🧣','Bufanda','ropa'],calcetines:['🧦','Calcetines','ropa'],chaqueta:['🧥','Chaqueta','ropa'],vestido:['👗','Vestido','ropa'],
+    tren:['🚆','Tren','transportes'],barco:['🚢','Barco','transportes'],helicoptero:['🚁','Helicóptero','transportes'],velero:['⛵','Velero','transportes']
+  };
+  Object.assign(words,applicationWords);
   const advancedIntruders=[
     {ids:['manzana','pan','zanahoria','leche'],answer:'leche',rule:'Buscamos alimentos sólidos: ¿cuál queda fuera porque es líquido?',why:'La leche es líquida; manzana, pan y zanahoria son alimentos sólidos.'},
     {ids:['auto','bus','camion','bicicleta'],answer:'bicicleta',rule:'Tres de estos transportes suelen usar motor. ¿Cuál se mueve al pedalear?',why:'La bicicleta se mueve al pedalear. Auto, bus y camión suelen usar motor.'},
     {ids:['gorro','polera','pantalon','zapatos'],answer:'gorro',rule:'Tres prendas se usan por debajo del cuello. ¿Cuál se usa en la cabeza?',why:'El gorro se usa en la cabeza. Polera, pantalón y zapatos se usan por debajo del cuello.'},
     {ids:['comer','dormir','jugar','cuchara'],answer:'cuchara',rule:'Tres palabras nombran acciones. ¿Cuál nombra un objeto?',why:'Cuchara nombra un objeto. Comer, dormir y jugar nombran acciones.'}
+  ];
+  const applicationIntruders=[
+    {ids:['perro','gato','conejo','mariposa'],answer:'mariposa',rule:'Tres animales tienen pelo y cuatro patas. ¿Cuál no cumple esas dos pistas?',why:'La mariposa tiene seis patas y alas. Perro, gato y conejo tienen pelo y cuatro patas.'},
+    {ids:['auto','bus','tren','barco'],answer:'barco',rule:'Buscamos transportes que avanzan por tierra y llevan pasajeros. ¿Cuál va por el agua?',why:'El barco avanza por el agua. Auto, bus y tren transportan pasajeros por tierra.'},
+    {ids:['manzana','pera','platano','queso'],answer:'queso',rule:'Tres alimentos son frutas que crecen en plantas. ¿Cuál se prepara con leche?',why:'El queso se prepara con leche. Manzana, pera y plátano son frutas.'},
+    {ids:['bufanda','gorro','chaqueta','cuchara'],answer:'cuchara',rule:'Para abrigarte eliges prendas de vestir. ¿Cuál no sirve para esa tarea?',why:'La cuchara sirve para comer. Bufanda, gorro y chaqueta son prendas para abrigarse.'}
   ];
   const advancedQuestions=[
     ['Sigue lloviendo cuando termina de guardar.','Ana irá al patio si deja de llover. Mientras llueve, guarda los juguetes.','¿Puede ir al patio según el acuerdo?','Todavía no, porque llueve','Sí, porque guardó','Sí, porque hay juguetes','No, porque es de noche'],
@@ -172,6 +214,16 @@ const LEARNING = (() => {
     ['«Los dos» significa Eva y su abuelo.','Eva y su abuelo leen un cuento. Los dos se sientan en el sofá.','¿Quiénes se sientan?','Eva y su abuelo','Solo Eva','Solo su abuelo','Eva y su perro'],
     ['Elige la frase que coincide con los dos datos.','La mochila de Tomás es azul. La de Sara es roja.','¿Cuál es la descripción correcta?','Tomás tiene la azul y Sara la roja','Los dos tienen mochila azul','Tomás tiene la roja','Sara tiene la azul']
   ].map(([model,context,text,answer,...wrong])=>({kind:'CONECTAR IDEAS',context,text,answer,model,options:[answer,...wrong].map(label=>['💡',label])}));
+  const applicationQuestions=[
+    ['La caja azul guarda libros; son los objetos que necesitamos para leer.','En la sala hay una caja azul con libros y una verde con bloques. Max quiere leer un cuento.','¿Qué caja debe abrir y por qué?','La azul, porque tiene libros','La verde, porque tiene bloques','La azul, porque tiene bloques','La verde, porque tiene libros'],
+    ['Los dos usan materiales distintos, pero ambos están creando un dibujo.','Antonia dibuja un árbol con lápices. Diego dibuja una casa con plumones.','¿Qué tienen en común?','Ambos dibujan','Ambos dibujan árboles','Ambos usan lápices','Ambos usan plumones'],
+    ['La instrucción dice que primero hay que subrayar y luego escribir.','La profesora dice: «Subraya el título y después escribe una oración sobre el cuento».','Max ya subrayó el título. ¿Qué sigue?','Escribir una oración sobre el cuento','Subrayar el título otra vez','Borrar el título','Guardar el cuento sin escribir'],
+    ['El aviso dice cuándo y dónde se prestan libros.','El aviso dice: «Préstamo de libros: martes y jueves en la biblioteca». Hoy es jueves.','¿Qué puede hacer Max según el aviso?','Pedir un libro en la biblioteca','Pedir un libro en la cocina','Pedir un libro solo el lunes','Pedir un libro en el patio'],
+    ['La regadera permite llevar agua hasta la planta.','El suelo de la maceta está seco. Amanda trae agua en una regadera y se acerca a la planta.','¿Qué hará probablemente?','Regar la planta','Cortar un papel','Leer un libro','Pintar la regadera'],
+    ['El texto explica el cuidado de una planta, que es el tema común de las tres acciones.','Una planta necesita luz. También necesita agua. Debemos observar cómo crece.','¿Qué título reúne las tres ideas?','Cómo cuidar una planta','Cómo guardar juguetes','Un viaje en tren','Los colores de una pelota'],
+    ['El «ellos» se refiere a los niños que recogieron y separaron los papeles.','Los niños recogieron papeles del patio. Luego ellos los pusieron en una caja para reciclar.','¿Quiénes pusieron los papeles en la caja?','Los niños','Los papeles','Las cajas','Los árboles'],
+    ['El texto cuenta la comida de la tortuga, pero no dice su nombre.','En la sala hay una tortuga. Hoy comió una hoja de lechuga.','¿Qué dato no aparece en el texto?','El nombre de la tortuga','Qué comió la tortuga','Dónde está la tortuga','Cuándo comió la tortuga']
+  ].map(([model,context,text,answer,...wrong])=>({kind:'APLICAR Y EXPLICAR',context,text,answer,model,options:[answer,...wrong].map(label=>['💡',label])}));
   // Each reasoning row is [level, visible clue, question, correct answer, three alternatives, explanation].
   const reasoningRows={
     patrones:[
@@ -253,18 +305,42 @@ const LEARNING = (() => {
       [4,'Pedí la pelota roja y me dieron la azul. Quiero aclarar cuál pedí.','¿Qué mensaje aclara el pedido?','Quería la pelota roja, por favor',['Dame eso','La otra cosa','Ya tengo una pelota'],'Nombrar la pelota y el color aclara cuál quiero.']
     ]
   };
+  reasoningRows.patrones.push(
+    [5,'25 · 30 · … · 40 · …','El patrón aumenta de cinco en cinco. ¿Qué pareja completa los espacios?','35 y 45',['34 y 44','35 y 50','40 y 45'],'Treinta más cinco son treinta y cinco. Cuarenta más cinco son cuarenta y cinco.'],
+    [5,'90 · 80 · … · 60 · …','El patrón disminuye de diez en diez. ¿Qué pareja falta?','70 y 50',['75 y 55','70 y 40','50 y 70'],'Después de ochenta va setenta; después de sesenta va cincuenta.'],
+    [5,'12 · 14 · … · 18 · …','El patrón aumenta de dos en dos. ¿Qué pareja falta?','16 y 20',['15 y 19','16 y 19','18 y 22'],'Catorce más dos son dieciséis. Dieciocho más dos son veinte.'],
+    [5,'● ▲ ▲ · ● ▲ ▲ · ● … …','La unidad es círculo, triángulo, triángulo. ¿Qué dos figuras faltan?','▲ ▲ Dos triángulos',['● ▲ Círculo y triángulo','▲ ● Triángulo y círculo','● ● Dos círculos'],'Después del círculo van dos triángulos para completar la unidad.'],
+    [5,'15 · 20 · 25 · 31 · 35','Queremos avanzar de cinco en cinco. ¿Qué corrección mantiene la regla?','Cambiar 31 por 30',['Cambiar 20 por 21','Cambiar 25 por 26','Cambiar 35 por 36'],'Veinticinco más cinco son treinta. Treinta más cinco son treinta y cinco.'],
+    [5,'10 · 20 · 30 · … · …','Los números aumentan de diez en diez. ¿Qué dos números continúan?','40 y 50',['31 y 32','40 y 60','35 y 40'],'Treinta más diez son cuarenta. Cuarenta más diez son cincuenta.']
+  );
+  reasoningRows.pistas.push(
+    [5,'Ana tiene un libro rojo de animales. Leo tiene un libro azul de animales. Eva tiene uno rojo de plantas.','Busco un libro rojo que trate de animales. ¿De quién es?','De Ana',['De Leo','De Eva','De los tres'],'El libro de Ana cumple las dos pistas: es rojo y trata de animales.'],
+    [5,'Hay tres cajas: una tiene cuatro lápices, otra seis y otra ocho. Busco más de cinco y menos de siete.','¿Cuántos lápices tiene la caja que busco?','Seis',['Cuatro','Ocho','Siete'],'Seis es mayor que cinco y menor que siete.'],
+    [5,'La biblioteca abre lunes y miércoles. El taller de lectura es solo el miércoles.','¿Qué día permite ir a la biblioteca y al taller?','Miércoles',['Lunes','Martes','Jueves'],'El miércoles se cumplen las dos condiciones.'],
+    [5,'Hay un cuadrado, un triángulo y un círculo. Mi figura tiene lados rectos y tres vértices.','¿Cuál cumple ambas pistas?','Triángulo',['Cuadrado','Círculo','Las tres'],'El triángulo tiene lados rectos y tres vértices.'],
+    [5,'Camila llegó antes que Diego. Antonia llegó después de Camila y antes de Diego.','¿Cuál es el orden de llegada?','Camila, Antonia, Diego',['Camila, Diego, Antonia','Antonia, Camila, Diego','Diego, Antonia, Camila'],'Camila llegó primero, Antonia quedó en medio y Diego al final.'],
+    [5,'Un pez tiene aletas y vive en el agua. Una mariposa tiene alas. Un conejo tiene pelo.','¿Qué animal coincide con las pistas «agua» y «aletas»?','Pez',['Mariposa','Conejo','Los tres'],'El pez cumple las dos pistas: vive en el agua y tiene aletas.']
+  );
+  reasoningRows.soluciones.push(
+    [5,'Para preparar una etiqueta debes escribir el nombre de la planta y la fecha. Max ya escribió «poroto».','¿Qué falta para completar la instrucción?','Escribir la fecha',['Escribir poroto otra vez','Dibujar un auto','Borrar el nombre'],'La etiqueta ya tiene el nombre de la planta; falta la fecha.'],
+    [5,'Hay doce lápices. Guardas cinco y prestas dos de los que quedaron.','¿Qué operaciones permiten saber cuántos quedan fuera?','Restar cinco y después dos',['Sumar cinco y después dos','Restar cinco y sumar dos','Sumar doce y cinco'],'Guardar cinco y prestar dos quita lápices del grupo inicial: doce menos cinco menos dos.'],
+    [5,'Quieres comparar el largo de dos cintas. Tienes una regla y todavía no has medido ninguna.','¿Qué plan permite compararlas?','Medir ambas con la misma regla',['Medir solo una cinta','Comparar solo sus colores','Doblar una sin medir'],'Para comparar los largos, medimos ambas cintas con la misma unidad.'],
+    [5,'Escribiste «la niña corre». Te piden revisar el inicio y el final de la oración.','¿Cuál cumple la revisión?','La niña corre.',['la niña corre.','La niña corre','la niña corre'],'Una oración empieza con mayúscula y termina con punto.'],
+    [5,'El problema dice: «Ana tiene ocho láminas y recibe cuatro más». Debes explicar cómo sabes el total.','¿Qué respuesta explica el cálculo?','Sumo ocho más cuatro porque recibe más',['Resto cuatro porque recibe más','Elijo ocho porque aparece primero','Elijo cuatro porque es menor'],'Recibir cuatro más aumenta la cantidad; por eso sumamos ocho más cuatro.'],
+    [5,'Hay tres votos por manzana y cinco por plátano. Debes mostrar cuál fue más elegido en un gráfico.','¿Qué opción representa los datos?','Manzana con tres marcas y plátano con cinco',['Manzana con cinco y plátano con tres','Ambas frutas con cinco marcas','Solo manzana con ocho marcas'],'Cada marca representa un voto: tres para manzana y cinco para plátano.']
+  );
   function reasoningBank(game,level){return (reasoningRows[game]||[]).filter(r=>r[0]===level).map(([,context,text,answer,wrong,model])=>({context,text,answer,options:[answer,...wrong],model}));}
   activities.push(
-    {id:'patrones',title:'¿Qué sigue?',subtitle:'Descubre la regla y completa el patrón.',tag:'RAZONAMIENTO · PATRONES',icon:'🔷',color:'blue',type:'24 retos de patrones',section:'razonar'},
-    {id:'pistas',title:'Detective de pistas',subtitle:'Une las pistas para encontrar la respuesta.',tag:'RAZONAMIENTO · DEDUCCIÓN',icon:'🕵️',color:'lilac',type:'24 retos de lógica',section:'razonar'},
-    {id:'soluciones',title:'Pienso una solución',subtitle:'Comprende el problema y elige qué hacer.',tag:'RAZONAMIENTO · VIDA DIARIA',icon:'💡',color:'yellow',type:'24 situaciones',section:'razonar'}
+    {id:'patrones',title:'¿Qué sigue?',subtitle:'Descubre la regla y completa el patrón.',tag:'RAZONAMIENTO · PATRONES',icon:'🔷',color:'blue',type:'30 retos de patrones',section:'razonar'},
+    {id:'pistas',title:'Detective de pistas',subtitle:'Une las pistas para encontrar la respuesta.',tag:'RAZONAMIENTO · DEDUCCIÓN',icon:'🕵️',color:'lilac',type:'30 retos de lógica',section:'razonar'},
+    {id:'soluciones',title:'Pienso una solución',subtitle:'Comprende el problema y elige qué hacer.',tag:'RAZONAMIENTO · VIDA DIARIA',icon:'💡',color:'yellow',type:'30 situaciones',section:'razonar'}
   );
-  activities.find(a=>a.id==='ordenar').type='48 oraciones para ordenar';
-  activities.find(a=>a.id==='completar').type='32 frases para completar';
-  activities.find(a=>a.id==='historias').type='12 cuentos · 36 preguntas';
+  activities.find(a=>a.id==='ordenar').type='60 oraciones para ordenar';
+  activities.find(a=>a.id==='completar').type='40 frases para completar';
+  activities.find(a=>a.id==='historias').type='15 cuentos · 45 preguntas';
   activities.find(a=>a.id==='puzle').type='Puzle de 4 a 16 piezas';
-  function questionBank(level){return level===4?advancedQuestions:level===3?[...challengeQuestions,...moreQuestions]:level===2?[...questions,...moreQuestions]:questions;}
-  function intruderBank(level){return level===4?advancedIntruders:level===3?trickyIntruders:intruders;}
+  function questionBank(level){return level===5?applicationQuestions:level===4?advancedQuestions:level===3?[...challengeQuestions,...moreQuestions]:level===2?[...questions,...moreQuestions]:questions;}
+  function intruderBank(level){return level===5?applicationIntruders:level===4?advancedIntruders:level===3?trickyIntruders:intruders;}
   function puzzleGrid(pieces){return {cols:pieces===4?2:pieces===6||pieces===9?3:4,rows:pieces===16?4:pieces===9||pieces===12?3:2};}
   function chooseVoice(voices,uri=''){
     const spanish=voices.filter(v=>/^es(?:[-_]|$)/i.test(v.lang));
@@ -282,12 +358,12 @@ const LEARNING = (() => {
     const all=Object.keys(categories);
     const cats=level===1?groups[index % groups.length]:Array.from({length:level===2?3:4},(_,i)=>all[(index+i)%all.length]);
     const ids=cats.flatMap(cat=>{
-      const vocabulary=Object.keys(words).filter(id=>words[id][2]===cat);
+      const vocabulary=Object.keys(words).filter(id=>words[id][2]===cat&&(level===5?!!applicationWords[id]:!applicationWords[id]));
       const start=Math.floor(index/groups.length);
-      return Array.from({length:level===4?4:level===3?3:count===2?1:2},(_,i)=>vocabulary[(start+i)%vocabulary.length]);
+      return Array.from({length:level>=4?4:level===3?3:count===2?1:2},(_,i)=>vocabulary[(start+i)%vocabulary.length]);
     });
     return {cats,ids:shuffle(ids)};
   }
-  return {words,categories,activities,intruders,questions,sequences,shuffle,choices,classifyRound,levels,questionBank,intruderBank,longSequences,advancedSequences,puzzleGrid,chooseVoice,voiceKey,sentenceBank,completionBank,storyBank,reasoningBank};
+  return {words,categories,activities,intruders,questions,sequences,shuffle,choices,classifyRound,levels,questionBank,intruderBank,longSequences,advancedSequences,sequenceBank,puzzleGrid,chooseVoice,voiceKey,sentenceBank,completionBank,storyBank,reasoningBank};
 })();
 if (typeof module !== 'undefined') module.exports=LEARNING;

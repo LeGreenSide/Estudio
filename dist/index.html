@@ -4,44 +4,45 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#14695f">
-  <meta name="description" content="Juegos visuales para explorar palabras, comprender preguntas y comunicar lo que necesitas, a tu ritmo.">
-  <title>Max estudia · Jugar y comunicar</title>
+  <meta name="description" content="Juegos de refuerzo de 2.º básico: Lenguaje, Matemática, Ciencias e Historia de Chile. Cinco niveles y actividades con voz.">
+  <title>Max estudia · 2.º básico</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%2314695f'/%3E%3Cpath d='M10 12h20v14H18l-7 5v-5h-1z' fill='%23fff'/%3E%3Ccircle cx='17' cy='19' r='2' fill='%2314695f'/%3E%3Ccircle cx='24' cy='19' r='2' fill='%2314695f'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=estudio-4">
-  <link rel="stylesheet" href="study.css?v=estudio-4">
-  <link rel="stylesheet" href="theme.css?v=color-5">
-  <script src="data.js?v=catalina-1" defer></script>
-  <script src="voice.js?v=comparar-7" defer></script>
-  <script src="study.js?v=comparar-7" defer></script>
-  <script src="app.js?v=sounds-6" defer></script>
+  <link rel="stylesheet" href="style.css?v=segundo-8">
+  <link rel="stylesheet" href="study.css?v=segundo-8">
+  <link rel="stylesheet" href="theme.css?v=segundo-8">
+  <script src="data.js?v=segundo-8" defer></script>
+  <script src="voice.js?v=segundo-8" defer></script>
+  <script src="curriculum.js?v=segundo-8" defer></script>
+  <script src="study.js?v=segundo-8" defer></script>
+  <script src="app.js?v=segundo-8" defer></script>
 </head>
 <body>
   <section id="entry" class="entry-screen" aria-labelledby="entry-title">
     <div class="entry-card">
       <div class="entry-art" aria-hidden="true"><img src="assets/learning-island.svg" alt="" width="260" height="182"></div>
-      <p class="eyebrow">TU ESPACIO PARA DESCUBRIR</p>
+      <p class="eyebrow">2.º BÁSICO · CHILE</p>
       <h1 id="entry-title">Max estudia<span>¡Una aventura para aprender!</span></h1>
-      <p>Juegos, palabras y retos para aprender a tu ritmo.</p>
+      <p>Lenguaje, Matemática, Ciencias e Historia.</p>
       <button class="primary start-button" data-action="start">Iniciar <span aria-hidden="true">→</span></button>
       <label class="entry-sound"><input id="start-sound" type="checkbox" checked> Entrar con sonido · «Hola Max»</label>
-      <p class="entry-note">Puedes parar, pedir ayuda y volver a intentarlo.</p>
+      <p class="entry-note">Lee, resuelve y descubre cómo mejorar.</p>
     </div>
   </section>
   <div id="app-shell" hidden>
   <a class="skip-link" href="#main">Ir a las actividades</a>
   <aside class="sidebar">
-    <a class="brand" href="#inicio" aria-label="Max estudia, inicio"><span class="brand-mark" aria-hidden="true">M<span>·</span></span><span>Max estudia<small>JUGAR Y COMUNICAR</small></span></a>
+    <a class="brand" href="#inicio" aria-label="Max estudia, inicio"><span class="brand-mark" aria-hidden="true">M<span>·</span></span><span>Max estudia<small>APRENDER Y PRACTICAR</small></span></a>
     <nav aria-label="Navegación principal">
-      <a href="#inicio" data-nav="inicio"><span aria-hidden="true">⌂</span> Mis actividades</a>
-      <a href="#estudio" data-nav="estudio"><span aria-hidden="true">▤</span> Mis pruebas</a>
+      <a href="#inicio" data-nav="inicio"><span aria-hidden="true">⌂</span> Inicio</a>
+      <a href="#estudio" data-nav="estudio"><span aria-hidden="true">▤</span> Mis materias</a>
       <a href="#razonar" data-nav="razonar"><span aria-hidden="true">✧</span> Razonar</a>
       <a href="#familia" data-nav="familia"><span aria-hidden="true">♡</span> En familia</a>
     </nav>
-    <div class="sidebar-note"><span aria-hidden="true">☀</span><strong>Cada intento cuenta.</strong><p>Hay muchas maneras<br>de comunicarnos.</p></div>
+    <div class="sidebar-note"><span aria-hidden="true">☀</span><strong>¡Pon a prueba tus ideas!</strong><p>Lee, resuelve<br>y explica tu respuesta.</p></div>
     <button class="settings-link" data-action="settings"><span aria-hidden="true">⚙</span> Ajustes para mí</button>
   </aside>
   <div class="workspace">
-    <header class="topbar"><span>Un espacio para aprender juntos</span><div><button class="quiet-btn" id="sound-toggle" data-action="sound" aria-pressed="false">Sonido: apagado</button><button class="quiet-btn pause-btn" data-action="pause">Ⅱ <span>Descansar</span></button><button class="quiet-btn" data-action="settings" aria-label="Ajustes para mí">⚙</button></div></header>
+    <header class="topbar"><span>Max estudia · 2.º básico</span><div><button class="quiet-btn" id="sound-toggle" data-action="sound" aria-pressed="false">Sonido: apagado</button><button class="quiet-btn pause-btn" data-action="pause">Ⅱ <span>Pausa</span></button><button class="quiet-btn" data-action="settings" aria-label="Ajustes para mí">⚙</button></div></header>
     <p id="audio-status" class="audio-notice" role="status" hidden></p>
     <main id="main" tabindex="-1"></main>
 
@@ -56,7 +57,7 @@
     <p class="victory-label">ACTIVIDAD COMPLETADA</p>
     <h2 id="victory-title"></h2>
     <p id="victory-message"></p>
-    <button class="primary" data-action="victory-next">Seguir jugando <span aria-hidden="true">→</span></button>
+    <button class="primary" data-action="victory-next">Siguiente reto <span aria-hidden="true">→</span></button>
     <button class="victory-review" data-action="victory-close">Ver mi respuesta</button>
   </section>
 </body>

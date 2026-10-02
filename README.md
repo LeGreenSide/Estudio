@@ -1,34 +1,39 @@
 # Max estudia
 
-Juegos en español para explorar el lenguaje, construir oraciones y practicar razonamiento. Sin dependencias, sin cronómetro y con ayuda disponible en todas las actividades.
+Refuerzo de 2.º básico de Chile con juegos de Lenguaje, Matemática, Ciencias Naturales e Historia y Geografía. Cinco niveles, instrucciones con voz y navegación por materia. Sin dependencias de ejecución ni cuentas de usuario.
 
 ## Actividades
 
-### Estudio para mis pruebas
+### Mis materias · 2.º básico
 
-Nueva sección basada en el temario escolar facilitado por la familia, con 22 juegos y acceso desde el inicio o **Mis pruebas**:
+34 juegos: los 22 del temario escolar de la familia y 12 nuevos de refuerzo curricular. Cada juego cerrado ofrece 12 retos por nivel. Acceso directo por materia desde el inicio o **Mis materias**. La cobertura y las fuentes oficiales están en [CURRICULUM.md](CURRICULUM.md); no es un reemplazo del programa completo.
+
+Los juegos nuevos trabajan comprensión lectora, ortografía, problemas de suma/resta hasta 100, multiplicación por 2/5/10, reloj digital, medidas, pictogramas, animales y hábitats, agua, tiempo atmosférico, paisajes de Chile y planos. El nivel 5 pide aplicar, inferir o combinar pistas dentro de estos contenidos.
+
+Se conserva el temario de octubre compartido por la familia:
 
 - **Lenguaje · 5 de octubre:** abecedario español con Ñ, orden alfabético, sustantivos propios y comunes, adjetivos, verbos, tiempos verbales, ordenar y escribir oraciones, y práctica manual del nombre.
-- **Números · 7 de octubre:** antecesor/sucesor, comparación, orden ascendente y descendente, ábaco manipulable, cifras y palabras, composición/descomposición, patrones y dobles. Los cuatro niveles trabajan hasta 99, 299, 499 y 599.
+- **Números · 7 de octubre:** antecesor/sucesor, comparación, orden ascendente y descendente, ábaco manipulable, cifras y palabras, composición/descomposición, patrones y dobles. Los niveles 1–4 trabajan hasta 99, 299, 499 y 599. El quinto combina números y aplicaciones sin superar 599. Este temario complementa los objetivos oficiales; el cálculo de los juegos curriculares se mantiene hasta 100.
 - **Geometría · 9 de octubre:** nombres de figuras 2D, lados rectos, vértices y ángulo recto, con dibujos SVG.
 
 Los retos cerrados tienen ayudas, corrección y fanfarria. Las oraciones libres se revisan con una lista junto a un adulto; no se califica automáticamente su significado. El nombre completo se introduce solo en la pantalla de práctica y puede trazarse con dedo o lápiz digital, o copiarse en papel usando el modelo de letra del curso. El nombre, los trazos y la escritura libre no se guardan ni se envían a la voz. No se publica la fotografía del temario.
 
 ### Juegos de comunicación
 
-- **Armo una oración:** 48 oraciones, 12 por nivel; arrastre, toque o teclado. Las palabras idénticas son intercambiables.
-- **La palabra que falta:** 32 frases con contexto y opciones que se pueden escuchar.
-- **Pequeños cuentos:** 12 cuentos y 36 preguntas. El relato permanece visible.
+- **Armo una oración:** 60 oraciones, 12 por nivel; arrastre, toque o teclado. Las palabras idénticas son intercambiables.
+- **La palabra que falta:** 40 frases con contexto y opciones que se pueden escuchar.
+- **Pequeños cuentos:** 15 cuentos y 45 preguntas. El relato permanece visible.
 - **Construyo mi mensaje:** 14 imágenes con «Quiero», «No quiero» o «Necesito»; permite añadir cuándo y dónde. Las preferencias personales no se califican.
 - Clasificación, elemento diferente, comprensión de preguntas, secuencias y puzle de 4, 6, 8, 9, 12 o 16 piezas.
-- **Razonamiento:** ¿Qué sigue?, Detective de pistas y Pienso una solución. Cada juego tiene seis retos por nivel: 72 en total. Incluyen patrones, deducciones, condiciones, causas y planificación cotidiana.
+- **Razonamiento:** ¿Qué sigue?, Detective de pistas y Pienso una solución. Cada juego tiene seis retos por nivel: 90 en total. Incluyen patrones, deducciones, condiciones, causas y planificación cotidiana.
 
-Cuatro niveles, disponibles desde el inicio:
+Cinco niveles, disponibles desde el inicio:
 
 1. **Primeros pasos:** dos alternativas, vocabulario concreto y secuencias cortas.
 2. **Explorar:** relaciones, ubicación, acciones y oraciones más largas.
 3. **Un nuevo reto:** causas, negaciones, conectores, secuencias de cinco o seis pasos y doce piezas.
 4. **Conecto mis ideas:** condiciones, inferencias, referencias, oraciones con «si», «aunque» y «mientras», secuencias de siete pasos y dieciséis piezas.
+5. **Aplico lo aprendido:** comprensión y decisiones con varias pistas, gramática en contexto, problemas y razonamiento. Mantiene dieciséis piezas de puzle; la dificultad crece en el contenido.
 
 El nivel se puede cambiar desde el catálogo o el juego. Ajustes permite personalizar alternativas, piezas, voz y volumen; cambiar el nivel reinicia la ronda.
 
@@ -76,9 +81,9 @@ El flujo `.github/workflows/pages.yml`, **Publicar Max estudia en GitHub Pages**
 
 `node test-answer-sounds.cjs` comprueba el orden de los sonidos al elegir, acertar y reintentar en ambos catálogos, así como ayuda, borrado, cancelación y modos silenciosos. Admite `TEST_BROWSER=webkit` y `TEST_URL`.
 
-`node test-study.cjs` valida los 22 juegos, cuatro niveles, orden alfabético, opciones y cálculos. `node test-study-ui.cjs` comprueba las respuestas, el ábaco, la escritura y el dibujo; recorre todos los retos en pantalla de 375 × 667, simulando la API de voz de Safari 15. Admite `TEST_BROWSER=webkit` y `TEST_URL` como la prueba móvil de audio.
+`node test-study.cjs` valida los 34 juegos, cinco niveles, orden alfabético, opciones y cálculos. `node test-curriculum.cjs` verifica los cálculos y el contenido de los 12 juegos curriculares. `node test-study-ui.cjs` comprueba respuestas, ábaco, escritura, dibujo, filtros por materia, nivel 5 persistente y texto ampliado al 200 %; recorre todos los retos en pantalla de 375 × 667, simulando la API de voz de Safari 15. Admite `TEST_BROWSER=webkit` y `TEST_URL` como la prueba móvil de audio.
 
-`node test.cjs` comprueba bancos de los cuatro niveles, opciones, respuestas, clasificación, secuencias y geometría del puzle.
+`node test.cjs` comprueba bancos de los cinco niveles, opciones, respuestas, clasificación, secuencias y geometría del puzle.
 
 `node test-ui.cjs`, con la vista previa abierta, comprueba entrada, saludo, juegos, oraciones duplicadas, fanfarria grabada, voces simuladas, cancelación y diseño adaptable. Usa Playwright del runtime local; `PLAYWRIGHT_PATH` permite indicar otra instalación. `TEST_LEVELS=4` limita las rondas al cuarto nivel; `TEST_URL` cambia el servidor. La prueba de voz verifica la programación, no su calidad audible.
 
@@ -86,7 +91,7 @@ El flujo `.github/workflows/pages.yml`, **Publicar Max estudia en GitHub Pages**
 
 `LEGACY_SPEECH=1` simula la interfaz de voz de Safari 15, sin `addEventListener`, en una pantalla de 375 × 667. Comprueba que Iniciar funciona con sonido y sin él, los juegos y las voces disponibles. La notificación de nuevas voces es opcional: su ausencia no debe impedir cargar la aplicación.
 
-`node test-voice.cjs` verifica los archivos de voz, la cobertura de los textos de los cuatro niveles, reproducción real de MP3, velocidad, cancelación y respaldo cuando falla una descarga.
+`node test-voice.cjs` verifica los archivos de voz, la cobertura de los textos de los cinco niveles, reproducción real de MP3, velocidad, cancelación y respaldo cuando falla una descarga.
 
 ## Preparar nuevos audios
 

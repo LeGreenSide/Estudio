@@ -39,10 +39,10 @@ const {words,sentenceBank,completionBank,questionBank,intruderBank,storyBank,rea
   await page.setViewportSize({width:1440,height:1000});
   console.log('OK: felicitaciones variadas, silencio, foco, Escape y popup móvil');
   if(process.env.VICTORY_ONLY==='1')return;
-  for(const level of (process.env.TEST_LEVELS==='none'?[]:(process.env.TEST_LEVELS||'1,2,3,4').split(',').map(Number))){
+  for(const level of (process.env.TEST_LEVELS==='none'?[]:(process.env.TEST_LEVELS||'1,2,3,4,5').split(',').map(Number))){
    await go('clasificar',level);assert.equal(await page.locator('[data-piece]').count(),level===1?2:level===2?6:level===3?12:16);
    assert.equal(await page.locator('[data-target]').count(),Math.min(level+1,4));
-   await go('secuencia',level);assert.equal(await page.locator('[data-piece]').count(),level===1?2:level===2?4:level===3?5:7);
+   await go('secuencia',level);assert.equal(await page.locator('[data-piece]').count(),level===1?2:level===2?4:level===3?5:level===4?7:6);
    if(level===4){
     for(let i=0;i<7;i++){await page.locator(`[data-piece="${i}"]`).click();await page.locator(`[data-target="${i}"]`).click();}
     assert(await page.locator('#victory-popup').isVisible());

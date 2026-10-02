@@ -24,9 +24,11 @@ jobs:
         run: |
           node test.cjs
           node test-study.cjs
+          node test-curriculum.cjs
           node --check dist/app.js
           node --check dist/data.js
           node --check dist/study.js
+          node --check dist/curriculum.js
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -1,8 +1,10 @@
 'use strict';
 const assert=require('node:assert/strict');
 const {readFileSync,existsSync,statSync}=require('node:fs');
-const {words,activities,intruders,questions,sequences,shuffle,choices,classifyRound,levels,questionBank,intruderBank,longSequences,advancedSequences,puzzleGrid,chooseVoice,sentenceBank,completionBank,storyBank,reasoningBank}=require('./dist/data.js');
+const {words,activities,intruders,questions,sequences,shuffle,choices,classifyRound,levels,questionBank,intruderBank,longSequences,advancedSequences,sequenceBank,puzzleGrid,chooseVoice,sentenceBank,completionBank,storyBank,reasoningBank}=require('./dist/data.js');
 assert.equal(new Set(activities.map(a=>a.id)).size,12);
+assert.deepEqual(Object.keys(levels),['1','2','3','4','5']);
+assert.equal(levels[5].name,'Aplico lo aprendido');
 for(const count of [2,3,4]) {
  for(let r=0;r<20;r++) {
   const {cats,ids}=classifyRound(r,count);
@@ -34,7 +36,7 @@ for(const n of [4,6,8,9,12,16]){
  const positions=Array.from({length:n},(_,i)=>`${i%cols}/${Math.floor(i/cols)}`);
  assert.equal(new Set(positions).size,n);
 }
-for(const level of [1,2,3,4]){
+for(const level of [1,2,3,4,5]){
  for(const game of ['patrones','pistas','soluciones']){
   const bank=reasoningBank(game,level);assert.equal(bank.length,6);
   bank.forEach(q=>{assert.equal(q.options.length,4);assert.equal(new Set(q.options).size,4);assert(q.options.includes(q.answer));assert(q.context&&q.text&&q.model);});
@@ -57,7 +59,14 @@ for(const level of [1,2,3,4]){
   if(q.ids)q.ids.forEach(id=>assert(words[id]));
   if(!q.preference){assert(ids.includes(q.answer));assert(choices(ids,q.answer,levels[level].choices).includes(q.answer));}
  }
+ assert.equal(sequenceBank(level).length,3);
+ sequenceBank(level).forEach(seq=>{assert(seq.title);assert(new Set(seq.steps.map(step=>step[1])).size===seq.steps.length);});
 }
+for(const bank of [sentenceBank,completionBank,storyBank,questionBank,intruderBank,sequenceBank])assert.notDeepEqual(bank(5),bank(4));
+for(const game of ['patrones','pistas','soluciones'])assert.notDeepEqual(reasoningBank(game,5),reasoningBank(game,4));
+assert(classifyRound(0,4,5).ids.every(id=>!classifyRound(0,4,4).ids.includes(id)));
+assert(sentenceBank(5).every(sentence=>sentence.tokens.length<=12));
+assert(sequenceBank(5).every(seq=>seq.steps.length===6));
 longSequences.forEach(seq=>assert([5,6].includes(seq.steps.length)));
 advancedSequences.forEach(seq=>assert.equal(seq.steps.length,7));
 const voices=[{name:'English natural',lang:'en-US',voiceURI:'en'},{name:'Chile',lang:'es-CL',voiceURI:'cl'},{name:'Mexico Natural',lang:'es-MX',voiceURI:'mx'}];

@@ -20,7 +20,7 @@ for(const [,label,category] of Object.values(L.words)){
  add(label);
  if(L.categories[category]){const message=`${label} va con ${L.categories[category][1].toLowerCase()}.`;add(message);add(message+' Toca ese grupo.');}
 }
-for(const level of [1,2,3,4]){
+for(const level of [1,2,3,4,5]){
  for(const q of [...L.questionBank(level),...L.intruderBank(level)]){
   add(q.text||q.rule||'¿Cuál es de otro grupo?');add(q.model||q.why);
   if(q.preference)for(const id of q.ids)add(`Elegiste ${L.words[id][1].toLowerCase()}. Tu elección cuenta.`);
@@ -38,7 +38,7 @@ for(const level of [1,2,3,4]){
   add(q.context+' '+q.text);add(q.model);q.options.forEach(add);
  }
 }
-for(const seq of [...L.sequences,...L.longSequences,...L.advancedSequences]){
+for(const seq of [1,2,3,4,5].flatMap(level=>L.sequenceBank(level))){
  add(seq.title);
  for(const steps of [seq.steps,seq.short].filter(Boolean))steps.forEach(([,label],i)=>{add(label);add(`${label} va en el paso ${i+1}.`);});
 }
@@ -49,7 +49,7 @@ for(const prefix of ['Quiero','No quiero','Necesito'])for(const id of messageWor
 }
 const study=require('../dist/study.js');
 ['Ahora toca el espacio donde va.','¡Terminaste tu práctica! Cada intento cuenta.',...Object.values(study.signNames)].forEach(add);
-for(const game of study.games)for(const level of [1,2,3,4])for(let i=0;i<study.total;i++){
+for(const game of study.games)for(const level of [1,2,3,4,5])for(let i=0;i<study.total;i++){
  const q=study.exercise(game.key,level,i);
  add(q.prompt+(q.clue?' '+q.clue:''));add(q.help);
  (q.tokens||q.options||[]).forEach(text=>add(study.signNames[text]||text));

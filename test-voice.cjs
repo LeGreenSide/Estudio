@@ -43,7 +43,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.cache/co
   // Exercise the real renderers and hint functions: every reachable utterance needs a clip.
   const missing=await page.evaluate(()=>{
    const absent=new Set();speak=text=>{if(!RECORDED_VOICE.files[LEARNING.voiceKey(text)])absent.add(text);};celebrate=speak;playEffect=(kind,text)=>{if(text)speak(text);};
-   for(const level of [1,2,3,4])for(const activity of activities.filter(a=>a.id!=='frases')){
+   for(const level of [1,2,3,4,5])for(const activity of activities.filter(a=>a.id!=='frases')){
     settings.level=level;settings.choices=levels[level].choices;settings.pieces=levels[level].pieces;route=activity.id;
     const total=route==='historias'?storyBank(level).length*3:route==='ordenar'?sentenceBank(level).length:route==='completar'?completionBank(level).length:route==='preguntas'?questionBank(level).length:route==='intruso'?intruderBank(level).length:reasoningGames.includes(route)?reasoningBank(route,level).length:route==='secuencia'?3:1;
     for(round=0;round<total;round++){
@@ -53,7 +53,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.cache/co
      else for(const id of [...state.ids]){select(id);hint();place(id,route==='clasificar'?words[id][2]:id);}
     }
    }
-   for(const game of STUDY.games)for(const level of [1,2,3,4])for(let i=0;i<STUDY.total;i++){
+   for(const game of STUDY.games)for(const level of [1,2,3,4,5])for(let i=0;i<STUDY.total;i++){
     route=game.id;round=i;settings.level=level;setupRound();renderGame();speak(state.instruction);hint();
     main.querySelectorAll('[data-speak]').forEach(b=>speak(b.dataset.speak));
     const q=state.q;
@@ -63,7 +63,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.cache/co
    }
    return [...absent];
   });
-  assert.deepEqual(missing,[]);console.log('OK: cobertura de instrucciones, palabras, pistas y respuestas de los cuatro niveles');
+  assert.deepEqual(missing,[]);console.log('OK: cobertura de instrucciones, palabras, pistas y respuestas de los cinco niveles');
   // A delayed, failed download must not resurrect speech after the user pauses.
   await page.route('**/assets/voice/*.mp3',async request=>{await new Promise(r=>setTimeout(r,300));await request.abort();});
   await page.reload();await page.locator('[data-action="start"]').click();

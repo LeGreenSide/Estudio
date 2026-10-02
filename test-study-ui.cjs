@@ -7,8 +7,11 @@ const {chromium,webkit}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.c
   await page.addInitScript(()=>{Object.defineProperty(window,'speechSynthesis',{value:{getVoices:()=>[],cancel(){},speak(){}},configurable:true});});
   const base=(process.env.TEST_URL||'http://127.0.0.1:4173').replace(/\/$/,'');
   await page.goto(base+'/#estudio');await page.locator('#start-sound').uncheck();await page.locator('[data-action="start"]').tap();
-  assert.equal(await page.locator('.study-subject .activity-card').count(),22);
-  await page.locator('[data-study-section="numeros"]').tap();assert(await page.locator('#study-numeros').isVisible());assert(page.url().endsWith('#estudio'));
+  assert.equal(await page.locator('.study-subject .activity-card').count(),await page.evaluate(()=>STUDY.games.length));
+  await page.locator('[href="#estudio/numeros"]').tap();assert(await page.locator('#study-numeros').isVisible());assert(page.url().endsWith('#estudio/numeros'));
+  assert.equal(await page.locator('.study-subject').count(),1);
+  await page.locator('[data-level]').selectOption('5');await page.reload();await page.locator('[data-action="start"]').tap();
+  assert.equal(await page.locator('[data-level]').inputValue(),'5');assert.equal(await page.evaluate(()=>settings.level),5);
   await page.locator('[href="#estudio-abaco"]').tap();await page.locator('[data-level]').selectOption('4');
   await page.locator('[data-study="check-abacus"]').tap();assert(await page.locator('#victory-popup').isHidden());
   for(let i=0;i<5;i++)await page.locator('[data-bead="0"][data-delta="1"]').tap();
@@ -33,7 +36,7 @@ const {chromium,webkit}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.c
   // Exercise every lesson/level through the shared game lifecycle, without network audio.
   const failures=await page.evaluate(()=>{
    const failures=[];settings.sound=false;
-   for(const g of STUDY.games)for(const level of [1,2,3,4])for(let i=0;i<STUDY.total;i++){
+   for(const g of STUDY.games)for(const level of [1,2,3,4,5])for(let i=0;i<STUDY.total;i++){
     route=g.id;round=i;settings.level=level;setupRound();renderGame();const q=state.q;
     if(document.documentElement.scrollWidth>innerWidth+1)failures.push(g.key+' overflow');
     if(q.type==='choice')answer(q.answer);
@@ -51,7 +54,19 @@ const {chromium,webkit}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.c
   assert.deepEqual(failures,[]);assert.deepEqual(errors,[]);
   await page.goto(base+'/#estudio');await page.reload();await page.locator('[data-action="start"]').tap();
   await page.screenshot({path:'../tmp/study-mobile.png',fullPage:true});
-  await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:'../tmp/study-desktop.png',fullPage:true});
-  console.log('OK: entrada Safari antiguo, 22 juegos, todos los niveles, respuestas incorrectas/correctas, escritura, privacidad, dibujo y móvil.');
+  for(const key of ['datos','planos','lectura','reloj','medir']){
+   await page.evaluate(key=>{settings.level=key==='medir'?3:5;location.hash='estudio-'+key;},key);
+   await page.waitForFunction(key=>route==='estudio-'+key,key);
+   if(key==='medir')assert(await page.evaluate(()=>{
+    const pencil=document.querySelector('.ruler-object').getBoundingClientRect(),marks=document.querySelectorAll('.ruler-ticks span');
+    const at=i=>{const r=marks[i].getBoundingClientRect();return r.x+r.width/2;};
+    return Math.abs(pencil.left-at(state.q.ruler.start))<1.5&&Math.abs(pencil.right-at(state.q.ruler.end))<1.5;
+   }),'El objeto debe comenzar y terminar en las marcas correctas de la regla');
+   await page.screenshot({path:'../tmp/school-'+key+'.png',fullPage:true});
+  }
+  await page.evaluate(()=>location.hash='estudio-nombre');await page.waitForFunction(()=>route==='estudio-nombre');await page.locator('[data-level]').selectOption('5');
+  assert(!await page.locator('#name-model').isVisible());await page.locator('summary').tap();assert(await page.locator('#name-model').isVisible());
+  await page.setViewportSize({width:1440,height:1000});await page.goto(base+'/#inicio');await page.screenshot({path:'../tmp/school-home.png',fullPage:true});
+  console.log('OK: entrada Safari antiguo, todos los juegos y cinco niveles, respuestas incorrectas/correctas, escritura, privacidad, dibujo y móvil.');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1);});
