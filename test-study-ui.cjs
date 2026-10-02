@@ -8,6 +8,20 @@ const {chromium,webkit}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.c
   const base=(process.env.TEST_URL||'http://127.0.0.1:4173').replace(/\/$/,'');
   await page.goto(base+'/#estudio');await page.locator('#start-sound').uncheck();await page.locator('[data-action="start"]').tap();
   assert.equal(await page.locator('.study-subject .activity-card').count(),await page.evaluate(()=>STUDY.games.length));
+  await page.locator('[data-nav="pruebas"]').tap();await page.locator('h1').filter({hasText:'Mis próximas pruebas'}).waitFor();
+  assert.equal(await page.locator('.study-subject .activity-card').count(),22);
+  for(const [group,count,date] of [['lenguaje',9,'5'],['numeros',10,'7'],['geometria',3,'9']]){
+   assert.equal(await page.locator('#study-'+group+' .activity-card').count(),count);
+   assert((await page.locator('#study-'+group+' .eyebrow').textContent()).includes(date+' DE OCTUBRE'));
+  }
+  assert.equal(await page.locator('[href="#pruebas/estudio-problemas"]').count(),0);
+  await page.screenshot({path:'../tmp/exams-mobile.png',fullPage:true});
+  await page.locator('[href="#pruebas/numeros"]').tap();await page.waitForFunction(()=>route==='pruebas'&&studySubject==='numeros');assert.equal(await page.locator('.study-subject').count(),1);
+  await page.locator('[href="#pruebas/estudio-comparar"]').tap();await page.waitForFunction(()=>route==='estudio-comparar'&&examsView);await page.reload();await page.locator('[data-action="start"]').tap();
+  assert(await page.locator('[data-nav="pruebas"]').getAttribute('aria-current')==='page');
+  await page.locator('main .back').tap();await page.waitForFunction(()=>route==='pruebas'&&studySubject==='numeros');assert(page.url().endsWith('#pruebas/numeros'));
+  await page.locator('[data-nav="estudio"]').tap();await page.waitForFunction(()=>route==='estudio'&&!examsView);
+  assert.equal(await page.locator('.study-subject .activity-card').count(),34);
   await page.locator('[href="#estudio/numeros"]').tap();assert(await page.locator('#study-numeros').isVisible());assert(page.url().endsWith('#estudio/numeros'));
   assert.equal(await page.locator('.study-subject').count(),1);
   await page.locator('[data-level]').selectOption('5');await page.reload();await page.locator('[data-action="start"]').tap();

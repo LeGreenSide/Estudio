@@ -4,6 +4,10 @@ Refuerzo de 2.º básico de Chile con juegos de Lenguaje, Matemática, Ciencias 
 
 ## Actividades
 
+### Mis próximas pruebas
+
+La prioridad en el inicio es preparar el temario de la semana: **Lenguaje, 5 de octubre; Matemática (números hasta 599), 7 de octubre; Geometría, 9 de octubre**. El menú **Mis pruebas** (`#pruebas`) reúne los 22 juegos del temario original, con sus cinco niveles. Cada fecha filtra sus actividades y los juegos permiten volver a esa prueba. **Mis materias** conserva el catálogo curricular completo.
+
 ### Mis materias · 2.º básico
 
 34 juegos: los 22 del temario escolar de la familia y 12 nuevos de refuerzo curricular. Cada juego cerrado ofrece 12 retos por nivel. Acceso directo por materia desde el inicio o **Mis materias**. La cobertura y las fuentes oficiales están en [CURRICULUM.md](CURRICULUM.md); no es un reemplazo del programa completo.
