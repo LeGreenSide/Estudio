@@ -22,7 +22,7 @@ const {chromium,webkit}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.c
   await page.locator('main .back').tap();await page.waitForFunction(()=>route==='pruebas'&&studySubject==='numeros');assert(page.url().endsWith('#pruebas/numeros'));
   await page.locator('[data-nav="estudio"]').tap();await page.waitForFunction(()=>route==='estudio'&&!examsView);
   assert.equal(await page.locator('.study-subject .activity-card').count(),34);
-  await page.locator('[href="#estudio/numeros"]').tap();assert(await page.locator('#study-numeros').isVisible());assert(page.url().endsWith('#estudio/numeros'));
+  await page.locator('[href="#estudio/numeros"]').tap();await page.waitForFunction(()=>route==='estudio'&&studySubject==='numeros');assert(await page.locator('#study-numeros').isVisible());assert(page.url().endsWith('#estudio/numeros'));
   assert.equal(await page.locator('.study-subject').count(),1);
   await page.locator('[data-level]').selectOption('5');await page.reload();await page.locator('[data-action="start"]').tap();
   assert.equal(await page.locator('[data-level]').inputValue(),'5');assert.equal(await page.evaluate(()=>settings.level),5);
