@@ -39,3 +39,27 @@ La aplicación aún no cubre todo el currículum: por ejemplo, producción exten
 ## Verificación
 
 `node test-curriculum.cjs` recorre los 720 retos nuevos. Verifica opciones válidas y distintas, respuestas numéricas, operaciones y límites, cálculo de horas y longitudes, escalas de pictogramas, recorridos, secuencias y diferencias del nivel 5 frente al 4. Los audios leen la escala y el recuento de símbolos del pictograma sin anticipar la cantidad resuelta.
+
+## Pruebas del 19 y 21 de octubre de 2026
+
+Temario recibido en una fotografía el 18 de octubre; fechas confirmadas por la familia: **Ciencias, lunes 19**, e **Historia, miércoles 21**. Se añadieron 10 juegos con 12 retos por nivel y cinco niveles (600 retos). Las pruebas anteriores del 5, 7 y 9 siguen disponibles como repasos.
+
+| Materia | Juegos y cobertura |
+| --- | --- |
+| Ciencias | Detective del cielo (tiempo y símbolos); Leo el pronóstico (mínima, máxima, comparación y diferencia); Mi estación del tiempo (termómetro, veleta y pluviómetro); ¿Qué cae de las nubes? (lluvia, nieve y granizo); Reportero del tiempo (armado y revisión de oraciones). |
+| Historia | Huellas del pasado (legado y mestizaje); Historias de viaje (inmigrante, casos del pasado y presente); ¿Quién hizo qué? (Colón, Valdivia, Isabel y Fernando); Las tres naves (Niña, Pinta, Santa María); La cocina de la historia (alimentos americanos e introducidos por españoles). |
+
+La progresión va desde reconocer con dos opciones hasta comparar datos y justificar una decisión. Los pronósticos son **inventados para practicar**, no información meteorológica real. La mínima y máxima se enseñan como extremos, sin asignarlas siempre a una hora; la veleta indica procedencia del viento, no velocidad. Los casos de familias son ficticios y no atribuyen oficios o costumbres a todas las personas de un origen.
+
+La referencia escolar a las «carabelas» se trabaja con los tres nombres y la precisión de que **Niña y Pinta eran carabelas, Santa María era una nao**. Se diferencia el viaje de Colón de 1492 de la fundación española de Santiago por Valdivia en 1541, reconociendo a los habitantes previos. Los alimentos «traídos por españoles» no se presentan como necesariamente originarios de España. El término Guillatún está tachado en la foto y no se incorporó como contenido de esta prueba.
+
+Fuentes verificadas para los contenidos nuevos:
+
+- [MINEDUC: Ciencias 2.º básico, OA 12 y 13](https://www.curriculumnacional.cl/docente/629/w3-article-21005.html) y [glosario de la Dirección Meteorológica de Chile](https://climatologia.meteochile.gob.cl/publicaciones/documentosGenerales/GlosarioReportesCiudadanos.pdf).
+- [MINEDUC: HI02 OA 03, legado y mestizaje](https://www.curriculumnacional.cl/614/w3-article-18086.html). La exploración de inmigrantes se relaciona con HI02 OA 04; personajes y naves se incluyen por el temario familiar, no como cobertura exhaustiva de ese objetivo.
+- [PARES, Ministerio de Cultura de España: Cristóbal Colón](https://pares.cultura.gob.es/ParesBusquedas20/catalogo/autoridad/118900/imprimir): viaje, monarcas y tipos de nave.
+- [Memoria Chilena: Santiago y su historia](https://www.memoriachilena.gob.cl/602/w3-article-634.html).
+- [Memoria Chilena: ingredientes de la cocina chilena](https://www.memoriachilena.gob.cl/602/w3-article-92902.html), [Chile para Niños: cocina y mestizaje](https://www.chileparaninos.gob.cl/639/w3-article-647040.html) y [MINEDUC: alimentos americanos](https://www.curriculumnacional.cl/614/w3-article-223466.html).
+- Migraciones del pasado: [alemana](https://www.memoriachilena.gob.cl/602/w3-article-676.html), [italiana](https://www.memoriachilena.gob.cl/602/w3-article-94719.html), [árabe](https://www.memoriachilena.gob.cl/602/w3-article-3523.html) y [china](https://www.archivonacional.gob.cl/noticias/presencia-china-en-chile-una-busqueda-en-los-archivos).
+
+`node test-weather.cjs` y `node test-history.cjs` verifican los bancos nuevos. `node test-study-ui.cjs` comprueba las fechas, enlaces profundos, regreso al temario, acceso a los repasos anteriores y todos los ejercicios, incluido el nivel 5 y la ampliación de texto al 200 %. Los nuevos audios se generan con Catalina y se comprueban con el catálogo completo, sin enviar respuestas del niño.

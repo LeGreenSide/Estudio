@@ -39,6 +39,12 @@ const {chromium}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.cache/co
   await page.waitForFunction(()=>narrationAudio?.currentSrc.endsWith(RECORDED_VOICE.files[LEARNING.voiceKey('El perro duerme')])&&narrationAudio.currentTime>0);
   assert.equal(await page.evaluate(()=>speechLog.length),0);
   await page.evaluate(()=>stopSpeech());
+  for(const key of ['pronostico','alimentos-origen']){
+   await page.evaluate(key=>{location.hash='pruebas/estudio-'+key;},key);await page.waitForFunction(key=>route==='estudio-'+key,key);
+   await page.locator('[data-action="listen"]').click();
+   await page.waitForFunction(()=>narrationAudio.currentSrc.endsWith(RECORDED_VOICE.files[LEARNING.voiceKey(state.instruction)])&&narrationAudio.currentTime>0);
+   assert.equal(await page.evaluate(()=>speechLog.length),0);await page.evaluate(()=>stopSpeech());
+  }
   console.log('OK: MP3 real, saludo, cuento, pausa, navegación, velocidad y felicitación encadenada');
   // Exercise the real renderers and hint functions: every reachable utterance needs a clip.
   const missing=await page.evaluate(()=>{

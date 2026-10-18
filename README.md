@@ -6,11 +6,13 @@ Refuerzo de 2.º básico de Chile con juegos de Lenguaje, Matemática, Ciencias 
 
 ### Mis próximas pruebas
 
-La prioridad en el inicio es preparar el temario de la semana: **Lenguaje, 5 de octubre; Matemática (números hasta 599), 7 de octubre; Geometría, 9 de octubre**. El menú **Mis pruebas** (`#pruebas`) reúne los 22 juegos del temario original, con sus cinco niveles. Cada fecha filtra sus actividades y los juegos permiten volver a esa prueba. **Mis materias** conserva el catálogo curricular completo.
+La prioridad en el inicio es **Ciencias, lunes 19 de octubre de 2026**, e **Historia, miércoles 21 de octubre**, con fechas confirmadas por la familia. El menú **Mis pruebas** (`#pruebas`) reúne 10 juegos nuevos, 5 niveles y 12 retos por nivel (600 retos). Hay símbolos e instrumentos dibujados, tablas de pronóstico, clasificación y armado de oraciones, con Catalina, ayudas y sonidos de respuesta.
+
+En **Repasos anteriores** siguen los 22 juegos de Lenguaje (5 de octubre), Números (7) y Geometría (9). Los enlaces antiguos funcionan y **Mis materias** conserva el catálogo completo.
 
 ### Mis materias · 2.º básico
 
-34 juegos: los 22 del temario escolar de la familia y 12 nuevos de refuerzo curricular. Cada juego cerrado ofrece 12 retos por nivel. Acceso directo por materia desde el inicio o **Mis materias**. La cobertura y las fuentes oficiales están en [CURRICULUM.md](CURRICULUM.md); no es un reemplazo del programa completo.
+44 juegos: 22 del temario escolar original, 12 de refuerzo curricular y 10 de las pruebas del 19 y 21 de octubre. Cada juego cerrado ofrece 12 retos por nivel. Acceso directo por materia desde el inicio o **Mis materias**. La cobertura y las fuentes oficiales están en [CURRICULUM.md](CURRICULUM.md); no es un reemplazo del programa completo.
 
 Los juegos nuevos trabajan comprensión lectora, ortografía, problemas de suma/resta hasta 100, multiplicación por 2/5/10, reloj digital, medidas, pictogramas, animales y hábitats, agua, tiempo atmosférico, paisajes de Chile y planos. El nivel 5 pide aplicar, inferir o combinar pistas dentro de estos contenidos.
 
@@ -85,7 +87,7 @@ El flujo `.github/workflows/pages.yml`, **Publicar Max estudia en GitHub Pages**
 
 `node test-answer-sounds.cjs` comprueba el orden de los sonidos al elegir, acertar y reintentar en ambos catálogos, así como ayuda, borrado, cancelación y modos silenciosos. Admite `TEST_BROWSER=webkit` y `TEST_URL`.
 
-`node test-study.cjs` valida los 34 juegos, cinco niveles, orden alfabético, opciones y cálculos. `node test-curriculum.cjs` verifica los cálculos y el contenido de los 12 juegos curriculares. `node test-study-ui.cjs` comprueba respuestas, ábaco, escritura, dibujo, filtros por materia, nivel 5 persistente y texto ampliado al 200 %; recorre todos los retos en pantalla de 375 × 667, simulando la API de voz de Safari 15. Admite `TEST_BROWSER=webkit` y `TEST_URL` como la prueba móvil de audio.
+`node test-study.cjs` valida los 44 juegos, cinco niveles, orden alfabético, opciones y cálculos. `node test-curriculum.cjs` verifica los cálculos y el contenido de los 12 juegos curriculares. `node test-study-ui.cjs` comprueba respuestas, ábaco, escritura, dibujo, filtros por materia, nivel 5 persistente y texto ampliado al 200 %; recorre todos los retos en pantalla de 375 × 667, simulando la API de voz de Safari 15. Admite `TEST_BROWSER=webkit` y `TEST_URL` como la prueba móvil de audio.
 
 `node test.cjs` comprueba bancos de los cinco niveles, opciones, respuestas, clasificación, secuencias y geometría del puzle.
 
@@ -97,11 +99,13 @@ El flujo `.github/workflows/pages.yml`, **Publicar Max estudia en GitHub Pages**
 
 `node test-voice.cjs` verifica los archivos de voz, la cobertura de los textos de los cinco niveles, reproducción real de MP3, velocidad, cancelación y respaldo cuando falla una descarga.
 
+`node test-weather.cjs` y `node test-history.cjs` comprueban los 600 retos de las nuevas pruebas: respuestas, progresión, lectura de instrumentos, mínimas/máximas, conceptos y hechos históricos.
+
 ## Preparar nuevos audios
 
 Los audios publicados se generaron con `es-CL-CatalinaNeural`, velocidad `-5%`, tras autorización del responsable de la app para enviar los textos públicos (incluido «Hola Max») a Microsoft y publicar los resultados. No se enviaron grabaciones, respuestas ni estadísticas del niño. Referencias: [voz de Microsoft](https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support) y [herramienta edge-tts](https://github.com/rany2/edge-tts).
 
-La generación es una tarea de mantenimiento; no se ejecuta en los dispositivos de quienes juegan ni en cada despliegue. Requiere Python con `edge-tts==7.2.8`, Node y conexión al servicio. El sitio publicado reproduce archivos y no requiere claves API ni suscripciones de sus visitantes.
+La generación es una tarea de mantenimiento; no se ejecuta en los dispositivos de quienes juegan ni en cada despliegue. Requiere Python con `edge-tts==7.3.1`, Node y conexión al servicio. El sitio publicado reproduce archivos y no requiere claves API ni suscripciones de sus visitantes.
 
 ```sh
 node tools/voice-catalog.cjs voice-catalog.json

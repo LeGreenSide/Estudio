@@ -1,4 +1,4 @@
-"""Build-time only: pip install edge-tts==7.2.8, then run after voice-catalog.cjs.
+"""Build-time only: pip install edge-tts==7.3.1, then run after voice-catalog.cjs.
 Sends the approved lesson catalog to Microsoft; no child responses are collected.
 """
 import asyncio, json, pathlib, re, sys
