@@ -6,15 +6,20 @@ Refuerzo de 2.º básico de Chile con juegos de Lenguaje, Matemática, Ciencias 
 
 ### Mis próximas pruebas
 
-La prioridad en el inicio es **Ciencias, lunes 19 de octubre de 2026**, e **Historia, miércoles 21 de octubre**, con fechas confirmadas por la familia. El menú **Mis pruebas** (`#pruebas`) reúne 10 juegos nuevos, 5 niveles y 12 retos por nivel (600 retos). Hay símbolos e instrumentos dibujados, tablas de pronóstico, clasificación y armado de oraciones, con Catalina, ayudas y sonidos de respuesta.
+La portada destaca las evaluaciones de noviembre de 2026: **Lenguaje, lunes 16; Matemática, viernes 20; Ciencias, lunes 23; Historia, miércoles 25**. Hay 33 actividades seleccionadas para este temario y cinco niveles. Se incorporaron **19 juegos nuevos y 1140 retos**.
 
-En **Repasos anteriores** siguen los 22 juegos de Lenguaje (5 de octubre), Números (7) y Geometría (9). Los enlaces antiguos funcionan y **Mis materias** conserva el catálogo completo.
+- Lenguaje: además del abecedario, gramática y comprensión existentes, género/número, sinónimos, diminutivos y transcripción a mano.
+- Matemática: dictado, palabras, orden, comparación, ábaco, composición y descomposición hasta 799; sumas con y sin reserva, restas y problemas; multiplicación como grupos y sumas repetidas.
+- Ciencias: símbolos, pronóstico, instrumentos, precipitación, reportes y estaciones con efectos en seres vivos (CN02 OA 12–14).
+- Historia: propuesta basada en la unidad 4 del programa MINEDUC: tradiciones, patrimonio, servicios, instituciones y convivencia. El aviso no identifica las lecciones del libro; la página señala esta incertidumbre para contrastar con el cuaderno o la profesora.
+
+**Repasos anteriores** (`#repasos`) conserva las cinco pruebas de octubre y sus 32 juegos. Los enlaces antiguos siguen abriendo los juegos. **Mis materias** reúne todo el catálogo.
 
 ### Mis materias · 2.º básico
 
-44 juegos: 22 del temario escolar original, 12 de refuerzo curricular y 10 de las pruebas del 19 y 21 de octubre. Cada juego cerrado ofrece 12 retos por nivel. Acceso directo por materia desde el inicio o **Mis materias**. La cobertura y las fuentes oficiales están en [CURRICULUM.md](CURRICULUM.md); no es un reemplazo del programa completo.
+63 juegos: 22 del temario original, 12 de refuerzo curricular, 10 de octubre y 19 de noviembre. Cada juego cerrado ofrece 12 retos por nivel. Acceso directo por materia desde el inicio o **Mis materias**. La cobertura y las fuentes oficiales están en [CURRICULUM.md](CURRICULUM.md); no es un reemplazo del programa completo.
 
-Los juegos nuevos trabajan comprensión lectora, ortografía, problemas de suma/resta hasta 100, multiplicación por 2/5/10, reloj digital, medidas, pictogramas, animales y hábitats, agua, tiempo atmosférico, paisajes de Chile y planos. El nivel 5 pide aplicar, inferir o combinar pistas dentro de estos contenidos.
+Los 12 juegos curriculares incorporados anteriormente trabajan comprensión lectora, ortografía, problemas de suma/resta hasta 100, multiplicación por 2/5/10, reloj digital, medidas, pictogramas, animales y hábitats, agua, tiempo atmosférico, paisajes de Chile y planos. El nivel 5 pide aplicar, inferir o combinar pistas dentro de estos contenidos.
 
 Se conserva el temario de octubre compartido por la familia:
 
@@ -87,7 +92,7 @@ El flujo `.github/workflows/pages.yml`, **Publicar Max estudia en GitHub Pages**
 
 `node test-answer-sounds.cjs` comprueba el orden de los sonidos al elegir, acertar y reintentar en ambos catálogos, así como ayuda, borrado, cancelación y modos silenciosos. Admite `TEST_BROWSER=webkit` y `TEST_URL`.
 
-`node test-study.cjs` valida los 44 juegos, cinco niveles, orden alfabético, opciones y cálculos. `node test-curriculum.cjs` verifica los cálculos y el contenido de los 12 juegos curriculares. `node test-study-ui.cjs` comprueba respuestas, ábaco, escritura, dibujo, filtros por materia, nivel 5 persistente y texto ampliado al 200 %; recorre todos los retos en pantalla de 375 × 667, simulando la API de voz de Safari 15. Admite `TEST_BROWSER=webkit` y `TEST_URL` como la prueba móvil de audio.
+`node test-study.cjs` valida los 63 juegos, cinco niveles, orden alfabético, opciones y cálculos. `node test-curriculum.cjs` verifica los cálculos y el contenido de los 12 juegos curriculares. `node test-study-ui.cjs` comprueba respuestas, ábaco, escritura, dibujo, filtros por materia, nivel 5 persistente y texto ampliado al 200 %; recorre todos los retos en pantalla de 375 × 667, simulando la API de voz de Safari 15. Admite `TEST_BROWSER=webkit` y `TEST_URL` como la prueba móvil de audio.
 
 `node test.cjs` comprueba bancos de los cinco niveles, opciones, respuestas, clasificación, secuencias y geometría del puzle.
 
@@ -97,9 +102,11 @@ El flujo `.github/workflows/pages.yml`, **Publicar Max estudia en GitHub Pages**
 
 `LEGACY_SPEECH=1` simula la interfaz de voz de Safari 15, sin `addEventListener`, en una pantalla de 375 × 667. Comprueba que Iniciar funciona con sonido y sin él, los juegos y las voces disponibles. La notificación de nuevas voces es opcional: su ausencia no debe impedir cargar la aplicación.
 
-`node test-voice.cjs` verifica los archivos de voz, la cobertura de los textos de los cinco niveles, reproducción real de MP3, velocidad, cancelación y respaldo cuando falla una descarga.
+`node test-voice.cjs` verifica los archivos de voz, la cobertura de los textos de los cinco niveles, reproducción real de MP3, velocidad, cancelación y respaldo cuando falla una descarga. Usa Chromium de Playwright o Chrome instalado con `TEST_BROWSER=chrome`.
 
 `node test-weather.cjs` y `node test-history.cjs` comprueban los 600 retos de las nuevas pruebas: respuestas, progresión, lectura de instrumentos, mínimas/máximas, conceptos y hechos históricos.
+
+`node test-november.cjs` verifica 1140 retos, fechas y selección de contenidos, operaciones y representaciones hasta 799, progresión, dictado sin respuesta visible y conservación de los repasos. La prueba de interfaz cubre además el límite de 7 centenas, transcripción con revisión y los enlaces nuevos y antiguos.
 
 ## Preparar nuevos audios
 

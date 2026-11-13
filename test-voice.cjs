@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict');
 const {chromium}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 (async()=>{
- const browser=await chromium.launch({headless:true});
+ const browser=await chromium.launch({headless:true,...(process.env.TEST_BROWSER==='chrome'?{channel:'chrome'}:{})});
  try{
   const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(()=>{
@@ -39,7 +39,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.cache/co
   await page.waitForFunction(()=>narrationAudio?.currentSrc.endsWith(RECORDED_VOICE.files[LEARNING.voiceKey('El perro duerme')])&&narrationAudio.currentTime>0);
   assert.equal(await page.evaluate(()=>speechLog.length),0);
   await page.evaluate(()=>stopSpeech());
-  for(const key of ['pronostico','alimentos-origen']){
+  for(const key of ['pronostico','alimentos-origen','dictado799','sumas','patrimonio']){
    await page.evaluate(key=>{location.hash='pruebas/estudio-'+key;},key);await page.waitForFunction(key=>route==='estudio-'+key,key);
    await page.locator('[data-action="listen"]').click();
    await page.waitForFunction(()=>narrationAudio.currentSrc.endsWith(RECORDED_VOICE.files[LEARNING.voiceKey(state.instruction)])&&narrationAudio.currentTime>0);

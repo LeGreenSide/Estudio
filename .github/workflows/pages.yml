@@ -27,6 +27,7 @@ jobs:
           node test-curriculum.cjs
           node test-weather.cjs
           node test-history.cjs
+          node test-november.cjs
           node --check dist/app.js
           node --check dist/data.js
           node --check dist/study.js

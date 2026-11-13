@@ -9,32 +9,39 @@ const {chromium,webkit}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.c
   await page.goto(base+'/#estudio');await page.locator('#start-sound').uncheck();await page.locator('[data-action="start"]').tap();
   assert.equal(await page.locator('.study-subject .activity-card').count(),await page.evaluate(()=>STUDY.games.length));
   await page.locator('[data-nav="pruebas"]').tap();await page.locator('h1').filter({hasText:'Mis próximas pruebas'}).waitFor();
-  assert.equal(await page.locator('.study-subject .activity-card').count(),10);
-  for(const [group,date] of [['ciencias','19'],['historia','21']]){
-   assert.equal(await page.locator('#study-'+group+' .activity-card').count(),5);
-   assert((await page.locator('#study-'+group+' .eyebrow').textContent()).includes(date+' DE OCTUBRE'));
+  assert.equal(await page.locator('.study-subject .activity-card').count(),33);
+  for(const [group,date,count] of [['lenguaje','16',12],['numeros','20',11],['ciencias','23',6],['historia','25',4]]){
+   assert.equal(await page.locator('#study-'+group+' .activity-card').count(),count);
+   assert((await page.locator('#study-'+group+' .eyebrow').textContent()).includes(date+' DE NOVIEMBRE'));
   }
+  assert((await page.locator('#study-historia aside').textContent()).includes('puede organizarse'));
   await page.screenshot({path:'../tmp/exams-mobile.png',fullPage:true});
-  for(const [group,key] of [['ciencias','pronostico'],['historia','legados']]){
+  for(const [group,key,count] of [['ciencias','pronostico',6],['historia','patrimonio',4],['lenguaje','manuscrita',12],['numeros','dictado799',11]]){
    await page.locator('[href="#pruebas/estudio-'+key+'"]').tap();await page.waitForFunction(key=>route==='estudio-'+key,key);
    await page.reload();await page.locator('[data-action="start"]').tap();
    assert.equal(await page.locator('[data-nav="pruebas"]').getAttribute('aria-current'),'page');
    await page.locator('main .back').tap();await page.waitForFunction(group=>studySubject===group&&examsView,group);
-   assert.equal(await page.locator('.study-subject .activity-card').count(),5);
+   assert.equal(await page.locator('.study-subject .activity-card').count(),count);
    await page.locator('[data-nav="pruebas"]').tap();await page.waitForFunction(()=>route==='pruebas'&&!studySubject);
   }
-  for(const [group,count,date] of [['lenguaje',9,'5'],['numeros',10,'7'],['geometria',3,'9']]){
-   await page.locator('[href="#pruebas/'+group+'"]').tap();await page.waitForFunction(group=>studySubject===group,group);
+  await page.evaluate(()=>location.hash='pruebas/estudio-legados');await page.waitForFunction(()=>route==='estudio-legados');
+  await page.locator('main .back').tap();await page.waitForFunction(()=>route==='repasos'&&studySubject==='historia');
+  assert.equal(await page.locator('.study-subject .activity-card').count(),5);
+  await page.evaluate(()=>location.hash='pruebas/geometria');await page.waitForFunction(()=>route==='repasos'&&studySubject==='geometria');
+  assert.equal(await page.locator('#study-geometria .activity-card').count(),3);
+  await page.evaluate(()=>location.hash='repasos');await page.waitForFunction(()=>route==='repasos'&&!studySubject);
+  assert.equal(await page.locator('.study-subject .activity-card').count(),32);
+  for(const [group,count,date] of [['lenguaje',9,'5'],['numeros',10,'7'],['geometria',3,'9'],['ciencias',5,'19'],['historia',5,'21']]){
+   await page.locator('[href="#repasos/'+group+'"]').tap();await page.waitForFunction(group=>studySubject===group,group);
    assert.equal(await page.locator('#study-'+group+' .activity-card').count(),count);
    assert((await page.locator('#study-'+group+' .eyebrow').textContent()).includes(date+' DE OCTUBRE'));
   }
-  assert.equal(await page.locator('[href="#pruebas/estudio-problemas"]').count(),0);
-  await page.locator('[href="#pruebas/numeros"]').tap();await page.waitForFunction(()=>route==='pruebas'&&studySubject==='numeros');assert.equal(await page.locator('.study-subject').count(),1);
-  await page.locator('[href="#pruebas/estudio-comparar"]').tap();await page.waitForFunction(()=>route==='estudio-comparar'&&examsView);await page.reload();await page.locator('[data-action="start"]').tap();
-  assert(await page.locator('[data-nav="pruebas"]').getAttribute('aria-current')==='page');
-  await page.locator('main .back').tap();await page.waitForFunction(()=>route==='pruebas'&&studySubject==='numeros');assert(page.url().endsWith('#pruebas/numeros'));
+  await page.locator('[href="#repasos/numeros"]').tap();await page.waitForFunction(()=>route==='repasos'&&studySubject==='numeros');
+  await page.locator('[href="#repasos/estudio-comparar"]').tap();await page.waitForFunction(()=>route==='estudio-comparar'&&archiveView);await page.reload();await page.locator('[data-action="start"]').tap();
+  assert.equal(await page.locator('[data-nav="pruebas"]').getAttribute('aria-current'),'page');
+  await page.locator('main .back').tap();await page.waitForFunction(()=>route==='repasos'&&studySubject==='numeros');
   await page.locator('[data-nav="estudio"]').tap();await page.waitForFunction(()=>route==='estudio'&&!examsView);
-  assert.equal(await page.locator('.study-subject .activity-card').count(),44);
+  assert.equal(await page.locator('.study-subject .activity-card').count(),63);
   await page.locator('[href="#estudio/numeros"]').tap();await page.waitForFunction(()=>route==='estudio'&&studySubject==='numeros');assert(await page.locator('#study-numeros').isVisible());assert(page.url().endsWith('#estudio/numeros'));
   assert.equal(await page.locator('.study-subject').count(),1);
   await page.locator('[data-level]').selectOption('5');await page.reload();await page.locator('[data-action="start"]').tap();
@@ -60,6 +67,22 @@ const {chromium,webkit}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.c
   assert(await page.locator('#name-pad').evaluate(c=>c.getContext('2d').getImageData(0,0,c.width,c.height).data.some(x=>x!==0)));
   await page.locator('[data-study="clear-pad"]').tap();assert(await page.locator('#name-pad').evaluate(c=>c.getContext('2d').getImageData(0,0,c.width,c.height).data.every(x=>x===0)));
   assert(!await page.evaluate(()=>JSON.stringify(localStorage).includes('<Max')));
+  await page.evaluate(()=>location.hash='pruebas/estudio-abaco799');await page.waitForFunction(()=>route==='estudio-abaco799');await page.locator('[data-level]').selectOption('4');
+  for(let i=0;i<7;i++)await page.locator('[data-bead="0"][data-delta="1"]').tap();
+  assert(await page.locator('[data-bead="0"][data-delta="1"]').isDisabled());assert.equal(await page.locator('#abacus-total').textContent(),'700');
+  await page.locator('[data-study="check-abacus"]').tap();assert(await page.locator('#victory-popup').isVisible());
+  await page.evaluate(()=>location.hash='pruebas/estudio-dictado799');await page.waitForFunction(()=>route==='estudio-dictado799');
+  assert.equal(await page.locator('.study-clue').count(),0);assert(await page.locator('.study-dictation details p').isHidden());
+  assert((await page.evaluate(()=>state.instruction)).includes('setecientos'));
+  await page.locator('#study-answer').fill('7');await page.locator('#study-answer-form button').tap();assert(await page.locator('#victory-popup').isHidden());
+  await page.locator('#study-answer').fill('700');await page.locator('#study-answer-form button').tap();assert(await page.locator('#victory-popup').isVisible());
+  await page.evaluate(()=>location.hash='pruebas/estudio-manuscrita');await page.waitForFunction(()=>route==='estudio-manuscrita');
+  await page.locator('[data-study="finish-copy"]').tap();assert(await page.locator('#victory-popup').isHidden());
+  await page.locator('#name-pad').scrollIntoViewIfNeeded();const copyBox=await page.locator('#name-pad').boundingBox();await page.mouse.move(copyBox.x+20,copyBox.y+20);await page.mouse.down();await page.mouse.move(copyBox.x+90,copyBox.y+70,{steps:6});await page.mouse.up();
+  for(let i=0;i<3;i++)await page.locator('[data-review="'+i+'"]').check();
+  await page.locator('[data-study="finish-copy"]').tap();assert(await page.locator('#victory-popup').isVisible());
+  assert(await page.locator('#name-pad').evaluate(c=>c.getContext('2d').getImageData(0,0,c.width,c.height).data.some(x=>x!==0)));
+  await page.evaluate(()=>{examsView=false;archiveView=false;});
   // Exercise every lesson/level through the shared game lifecycle, without network audio.
   const failures=await page.evaluate(()=>{
    const failures=[];settings.sound=false;
@@ -82,7 +105,7 @@ const {chromium,webkit}=require(process.env.PLAYWRIGHT_PATH||'C:/Users/Lester/.c
   assert.deepEqual(failures,[]);assert.deepEqual(errors,[]);
   await page.goto(base+'/#estudio');await page.reload();await page.locator('[data-action="start"]').tap();
   await page.screenshot({path:'../tmp/study-mobile.png',fullPage:true});
-  for(const key of ['datos','planos','lectura','reloj','medir','pronostico','instrumentos','simbolos-tiempo','naves','alimentos-origen']){
+  for(const key of ['datos','planos','lectura','reloj','medir','pronostico','instrumentos','simbolos-tiempo','naves','alimentos-origen','sumas','manuscrita','patrimonio','estaciones']){
    await page.evaluate(key=>{settings.level=key==='medir'?3:5;location.hash='estudio-'+key;},key);
    await page.waitForFunction(key=>route==='estudio-'+key,key);
    if(key==='medir')assert(await page.evaluate(()=>{

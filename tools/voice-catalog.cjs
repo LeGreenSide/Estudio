@@ -51,7 +51,7 @@ const study=require('../dist/study.js');
 ['Ahora toca el espacio donde va.','¡Terminaste tu práctica! Cada intento cuenta.',...Object.values(study.signNames)].forEach(add);
 for(const game of study.games)for(const level of [1,2,3,4,5])for(let i=0;i<study.total;i++){
  const q=study.exercise(game.key,level,i);
- add(q.prompt+(q.clue?' '+q.clue:''));add(q.help);
+ add(q.prompt+((q.audioText||q.clue)?' '+(q.audioText||q.clue):''));add(q.audioText);add(q.help);
  (q.tokens||q.options||[]).forEach(text=>add(study.signNames[text]||text));
 }
 const catalog=[...texts.values()];

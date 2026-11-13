@@ -13,8 +13,8 @@ for(const game of S.games)for(let level=1;level<=5;level++)for(let i=0;i<S.total
   if(game.key==='alfabeto')assert.deepEqual(q.tokens,[...q.tokens].sort(collator.compare));
   if(game.key==='orden'){const ns=q.tokens.map(Number);assert(ns.every(n=>n>=0&&n<=[99,299,499,599,599][level-1]));assert.deepEqual(ns,[...ns].sort((a,b)=>i%2?b-a:a-b));}
  }
- if(q.numeric)assert(Number(q.answer)>=0&&Number(q.answer)<=599);
- if(q.type==='abacus')assert(q.n>=0&&q.n<=599);
+ if(q.numeric)assert(Number(q.answer)>=0&&Number(q.answer)<=(game.exam==='noviembre'?799:599));
+ if(q.type==='abacus')assert(q.n>=0&&q.n<=(game.exam==='noviembre'?799:599));
  if(game.key==='vecinos'||game.key==='patron')assert(q.options.every(x=>Number(x)>=0&&Number(x)<=599));
  if(game.key==='descomponer')assert.equal(q.answer.split(' + ').reduce((sum,n)=>sum+Number(n),0),Number(q.clue));
  if(game.key==='componer')assert.equal(q.clue.split(' + ').reduce((sum,n)=>sum+Number(n),0),Number(q.answer));
